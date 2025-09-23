@@ -1,0 +1,27 @@
+﻿@model IEnumerable<CarManagementSystem.DataAccess.User>
+
+<h2>User List</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>FullName</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Role</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var u in Model)
+        {
+            <tr>
+                <td>@u.Id</td>
+                <td>@u.FullName</td>
+                <td>@u.Email</td>
+                <td>@u.Phone</td>
+                <td>@u.Role</td>
+            </tr>
+        }
+    </tbody>
+</table>
