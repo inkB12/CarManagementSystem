@@ -1,4 +1,8 @@
 ﻿using CarManagementSystem.DataAccess;
+using CarManagementSystem.DataAccess.Repositories.Interfaces;
+using CarManagementSystem.DataAccess.Repositories.Services;
+using CarManagementSystem.Services.Interfaces;
+using CarManagementSystem.Services.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,6 +10,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Đăng ký DbContext
 builder.Services.AddDbContext<CarManagementDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+//Đăng ký các repository và service
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
