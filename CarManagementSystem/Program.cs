@@ -11,9 +11,19 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<CarManagementDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-//Đăng ký các repository và service
+// ==================== Repository ====================
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ICarCompanyRepository, CarCompanyRepository>();
+builder.Services.AddScoped<IVehicleCategoryRepository, VehicleCategoryRepository>();
+builder.Services.AddScoped<IElectricVehicleRepository, ElectricVehicleRepository>();
+
+// ==================== Service ====================
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ICarCompanyService, CarCompanyService>();
+builder.Services.AddScoped<IVehicleCategoryService, VehicleCategoryService>();
+builder.Services.AddScoped<IElectricVehicleService, ElectricVehicleService>();
+
+
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
