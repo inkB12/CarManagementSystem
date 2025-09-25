@@ -1,27 +1,177 @@
-﻿@model IEnumerable<CarManagementSystem.DataAccess.User>
+﻿@model CarManagementSystem.WebMVC.Models.HomePageViewModel
+@{
+    ViewData["Title"] = "Trang chủ";
+}
 
-<h2>User List</h2>
+<!-- ===================== HERO-BANNER (Carousel) ===================== -->
+<section class="container py-4">
+    <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner rounded-4 shadow">
+            @for (int i = 0; i < Model.HeroImages.Count; i++)
+            {
+                <div class="carousel-item @(i==0?"active":"")">
+                    <img src="@Model.HeroImages[i]" class="d-block w-100 object-cover" alt="hero @i" style="height: 420px;">
+                </div>
+            }
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Trước</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Sau</span>
+        </button>
+    </div>
+</section>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>FullName</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>Role</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var u in Model)
+<!-- ===================== INFORMATION-BANNER ===================== -->
+<section class="bg-light py-5 border-top border-bottom">
+    <div class="container">
+        <div class="row g-4 align-items-center">
+            <div class="col-lg-8">
+                <h2 class="h3 mb-2">@Model.IntroTitle</h2>
+                <p class="lead text-secondary mb-0">@Model.IntroText</p>
+            </div>
+            <div class="col-lg-4">
+                <form method="get" action="/ElectricVehicles" class="d-flex gap-2">
+                    <input class="form-control form-control-lg" name="q" placeholder="Tìm model, hãng..." />
+                    <button class="btn btn-primary btn-lg">Tìm</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===================== CATEGORY-BANNER (2 hàng, tối đa 6 ảnh) ===================== -->
+<section class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="h4">Danh mục / Dịch vụ</h2>
+    </div>
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        @foreach (var c in Model.CategoryCards.Take(6))
         {
-            <tr>
-                <td>@u.Id</td>
-                <td>@u.FullName</td>
-                <td>@u.Email</td>
-                <td>@u.Phone</td>
-                <td>@u.Role</td>
-            </tr>
+            <div class="col">
+                <a href="@c.Link" class="text-decoration-none">
+                    <div class="position-relative rounded-4 overflow-hidden shadow-sm category-card">
+                        <img src="@c.Img" alt="@c.Label" class="w-100 object-cover" style="height:220px;">
+                        <div class="position-absolute bottom-0 start-0 end-0 p-3 bg-gradient-dark text-white">
+                            <span class="fw-semibold">@c.Label</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
         }
-    </tbody>
-</table>
+    </div>
+</section>
+
+<!-- ===================== NEWS-BANNER (2 cột: trái 1 lớn, phải 3 nhỏ) ===================== -->
+@if (Model.News?.Any() == true)
+{
+    <section class="container pb-5">
+        <div class="row g-4">
+            <!-- Cột trái: 1 tin lớn -->
+            <div class="col-lg-7">
+                @{
+                    var big = Model.News.First();
+                }
+                <a href="@big.Url" class="text-decoration-none text-reset">
+                    <div class="card border-0 shadow-sm">
+                        <div class="row g-0">
+                            <div class="col-md-7">
+                                <img src="@(big.ImageUrl ?? "https://placehold.co/900x520")" class="img-fluid rounded-start object-cover" style="height:100%; min-height:320px;" alt="@big.Title">
+                            </div>
+                            <div class="col-md-5">
+                                <div class="card-body">
+                                    <div class="small text-muted">@big.PublishedAt?.ToString("dd/MM/yyyy")</div>
+                                    <h3 class="h5">@big.Title</h3>
+                                    <p class="text-secondary">@big.Summary</p>
+                                    <span class="btn btn-outline-primary btn-sm">Xem chi tiết</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Cột phải: 3 tin nhỏ -->
+            <div class="col-lg-5">
+                <div class="vstack gap-3">
+                    @foreach (var n in Model.News.Skip(1).Take(3))
+                    {
+                        <a href="@n.Url" class="text-decoration-none text-reset">
+                            <div class="card border-0 shadow-sm">
+                                <div class="row g-0 align-items-center">
+                                    <div class="col-4">
+                                        <img src="@(n.ImageUrl ?? "https://placehold.co/300x200")" class="img-fluid rounded-start object-cover" style="height:110px; width:100%;" alt="@n.Title">
+                                    </div>
+                                    <div class="col-8">
+                                        <div class="card-body py-2">
+                                            <div class="small text-muted">@n.PublishedAt?.ToString("dd/MM")</div>
+                                            <div class="fw-semibold">@n.Title</div>
+                                            <div class="small text-secondary text-truncate-2">@n.Summary</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    </section>
+}
+
+<!-- ===================== PROMOTION-BANNER ===================== -->
+@if (Model.ActivePromotions.Any())
+{
+    <section class="py-5 bg-primary-subtle border-top border-bottom">
+        <div class="container">
+            <h2 class="h4 mb-3">Khuyến mãi</h2>
+            <div class="row g-3">
+                @foreach (var p in Model.ActivePromotions)
+                {
+                    <div class="col-12 col-md-6 col-xl-4">
+                        <div class="alert alert-primary shadow-sm m-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="fw-bold">Mã: @p.Code</div>
+                                    <div class="small">@p.Description</div>
+                                </div>
+                                <span class="badge bg-white text-primary border">
+                                    -@($"{p.Discount:0.#}")%
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+}
+
+<!-- ===================== FEATURE-BANNER (Xe nổi bật) ===================== -->
+<section class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="h4">Xe nổi bật</h2>
+        <a class="btn btn-outline-primary btn-sm" href="/ElectricVehicles">Xem tất cả</a>
+    </div>
+    <div class="row g-4">
+        @foreach (var v in Model.FeaturedVehicles)
+        {
+            <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                <div class="card h-100 shadow-sm">
+                    <img src="@(string.IsNullOrWhiteSpace(v.ImageUrl) ? "https://placehold.co/600x400?text=EV" : v.ImageUrl)"
+                         class="card-img-top object-cover" style="height:190px;" alt="@v.Model" />
+                    <div class="card-body">
+                        <div class="small text-muted">@v.CarCompany?.CatalogName</div>
+                        <h3 class="h6 mb-1">@v.Model (@v.Version)</h3>
+                        <div class="fw-bold text-primary mb-2">@v.Price.ToString("C0")</div>
+                        <p class="small text-secondary text-truncate-3">@v.Specification</p>
+                        <a href="/ElectricVehicles/Details/@v.Id" class="btn btn-primary w-100">Xem chi tiết</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</section>
