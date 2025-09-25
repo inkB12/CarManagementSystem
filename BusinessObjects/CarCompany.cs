@@ -1,4 +1,7 @@
-﻿namespace CarManagementSystem.DataAccess;
+﻿using System;
+using System.Collections.Generic;
+
+namespace CarManagementSystem.BusinessObjects;
 
 public partial class CarCompany
 {

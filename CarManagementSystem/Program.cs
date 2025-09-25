@@ -1,4 +1,4 @@
-﻿using CarManagementSystem.DataAccess;
+﻿using CarManagementSystem.BusinessObjects;
 using CarManagementSystem.DataAccess.Repositories.Implements;
 using CarManagementSystem.DataAccess.Repositories.Interfaces;
 using CarManagementSystem.DataAccess.Repositories.Services;

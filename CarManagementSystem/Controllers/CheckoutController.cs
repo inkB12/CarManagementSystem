@@ -1,4 +1,6 @@
-﻿using CarManagementSystem.Services.Interfaces;
+﻿using System.Threading.Tasks;
+using CarManagementSystem.BusinessObjects;
+using CarManagementSystem.Services.Interfaces;
 using CarManagementSystem.WebMVC.Models;
 using CarManagementSystem.WebMVC.Models.Checkout;
 using Microsoft.AspNetCore.Mvc;
@@ -31,7 +33,7 @@ namespace CarManagementSystem.WebMVC.Controllers
 
         [HttpPost]
         [Route("")]
-        public IActionResult Checkout(CheckoutViewModel model)
+        public async Task<IActionResult> Checkout(CheckoutViewModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -39,7 +41,23 @@ namespace CarManagementSystem.WebMVC.Controllers
                 return View(model);
             }
 
-            var paymentUrl = "url";
+            // Create Order
+            var response = await _orderService.CreateAsync(new Order()
+            {
+                PaymentMethod = model.PaymentMethod,
+                Address = model.AddressInfo.Address,
+                ZipCode = model.AddressInfo.ZipCode,
+                Note = model.AddressInfo.Note,
+                PromotionId = model.PromotionId,
+            });
+
+            if (response.ok)
+            {
+                var createdOrder = response.data;
+                var paymentUrl = "url";
+            }
+
+            
 
             return Redirect(paymentUrl);
         }

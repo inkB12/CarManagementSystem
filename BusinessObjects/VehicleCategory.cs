@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace CarManagementSystem.DataAccess;
+namespace CarManagementSystem.BusinessObjects;
 
 public partial class VehicleCategory
 {

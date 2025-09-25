@@ -1,4 +1,5 @@
-﻿using CarManagementSystem.DataAccess;
+﻿using CarManagementSystem.BusinessObjects;
+using CarManagementSystem.DataAccess;
 using CarManagementSystem.WebMVC.Models; // đổi theo nơi bạn đặt HomePageVM
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

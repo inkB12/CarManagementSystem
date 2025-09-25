@@ -1,15 +1,25 @@
 ﻿
 
 using System.Linq.Expressions;
+using CarManagementSystem.BusinessObjects;
 using CarManagementSystem.DataAccess.Repositories.Interfaces;
 
 namespace CarManagementSystem.DataAccess.Repositories.Implements
 {
     public class OrderRepository : IOrderRepository
     {
-        public Task<Order> CreateAsync(Order order)
+        private readonly CarManagementDbContext _context;
+
+        public OrderRepository(CarManagementDbContext context)
         {
-            throw new NotImplementedException();
+            _context = context;
+        }
+
+        public async Task<Order> CreateAsync(Order order)
+        {
+            _context.Orders.Add(order);
+            await _context.SaveChangesAsync();
+            return order;
         }
 
         public Task<bool> DeleteAsync(int id)

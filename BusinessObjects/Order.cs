@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace CarManagementSystem.DataAccess;
+namespace CarManagementSystem.BusinessObjects;
 
 public partial class Order
 {
@@ -15,7 +15,13 @@ public partial class Order
 
     public string Status { get; set; } = null!;
 
+    public string Address { get; set; } = null!;
+
+    public string ZipCode { get; set; } = null!;
+
     public int UserId { get; set; }
+
+    public string? Note { get; set; }
 
     public int? PromotionId { get; set; }
 
