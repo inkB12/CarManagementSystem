@@ -28,6 +28,12 @@ namespace CarManagementSystem.WebMVC.Controllers
                 return View(vm);
             }
 
+            // lưu vào session
+            HttpContext.Session.SetInt32("UserId", response.data.Id);
+            HttpContext.Session.SetString("UserEmail", response.data.Email);
+            HttpContext.Session.SetString("UserRole", response.data.Role);
+            HttpContext.Session.SetString("UserFullName", response.data.FullName);
+
             TempData["msg"] = "Login success";
             return RedirectToAction("Index","Home");
         }
@@ -53,8 +59,8 @@ namespace CarManagementSystem.WebMVC.Controllers
 
         public IActionResult Logout()
         {
-            // TODO: clear cookie/session nếu bạn implement auth
-            TempData["msg"] = "Logged out";
+            HttpContext.Session.Clear();
+            TempData["msg"] = "Already Logout.";
             return RedirectToAction("Login");
         }
     }

@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -26,8 +27,27 @@
                         <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Index">Trang chủ</a></li>
                         <li class="nav-item"><a class="nav-link" asp-controller="Promotions" asp-action="Index">Khuyến mãi</a></li>
                         <li class="nav-item"><a class="nav-link" asp-controller="ElectricVehicles" asp-action="Index">Xe điện</a></li>
-                        <li class="nav-item"><a class="nav-link" asp-controller="Auth" asp-action="Login">Đăng nhập</a></li>
-                        <li class="nav-item"><a class="nav-link" asp-controller="Auth" asp-action="Register">Đăng ký</a></li>
+                        @if (Context.Session.GetInt32("UserId") == null)
+                        {
+                            <!-- Nếu chưa login -->
+                            <li class="nav-item"><a class="nav-link" asp-controller="Auth" asp-action="Login">Đăng nhập</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-controller="Auth" asp-action="Register">Đăng ký</a></li>
+                        }
+                        else
+                        {
+                            <!-- Nếu đã login -->
+                            <li class="nav-item fw-bold">
+                                <a class="btn btn-light border ms-2"
+                                   asp-controller="User"
+                                   asp-action="Edit"
+                                   asp-route-id="@Context.Session.GetInt32("UserId")">
+                                    <span class="text-dark">User:</span>
+                                    <span class="text-danger">@Context.Session.GetString("UserFullName")</span>
+                                </a>
+                            </li>
+
+                            <li class="nav-item"><a class="nav-link" asp-controller="Auth" asp-action="Logout">Đăng xuất</a></li>
+                        }
                     </ul>
                 </div>
             </div>
