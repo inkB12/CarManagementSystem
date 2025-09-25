@@ -13,11 +13,24 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<CarManagementDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-//Đăng ký các repository và service
+// ==================== Repository ====================
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ICarCompanyRepository, CarCompanyRepository>();
+builder.Services.AddScoped<IVehicleCategoryRepository, VehicleCategoryRepository>();
+builder.Services.AddScoped<IElectricVehicleRepository, ElectricVehicleRepository>();
+builder.Services.AddScoped<IPromotionRepository, PromotionRepository>();
+builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+
+// ==================== Service ====================
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ICarCompanyService, CarCompanyService>();
+builder.Services.AddScoped<IVehicleCategoryService, VehicleCategoryService>();
+builder.Services.AddScoped<IElectricVehicleService, ElectricVehicleService>();
+builder.Services.AddScoped<IPromotionService, PromotionService>();
+builder.Services.AddScoped<IFeedbackService, FeedbackService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
+
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

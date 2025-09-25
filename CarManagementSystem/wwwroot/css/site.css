@@ -20,3 +20,45 @@ html {
 body {
   margin-bottom: 60px;
 }
+.object-cover {
+    object-fit: cover;
+}
+
+.text-truncate-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.text-truncate-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.bg-primary-subtle {
+    background-color: rgba(13,110,253,.08);
+}
+
+.bg-gradient-dark {
+    background: linear-gradient(to top, rgba(0,0,0,.55), rgba(0,0,0,.05));
+}
+
+.category-card:hover {
+    transform: translateY(-2px);
+    transition: transform .2s ease;
+}
+.text-electric {
+    color: #00e676; /* xanh neon */
+}
+
+.hover-electric:hover {
+    color: #00e676 !important;
+}
+
+footer {
+    background: linear-gradient(to right, #0a0f1c, #111a2d);
+}
+
