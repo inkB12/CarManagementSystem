@@ -1,0 +1,36 @@
+﻿/* Sidebar layout */
+#wrapper {
+    display: flex;
+    width: 100%;
+}
+
+#sidebar-wrapper {
+    min-width: 250px;
+    max-width: 250px;
+    min-height: 100vh;
+    transition: all 0.3s ease;
+}
+
+#page-content-wrapper {
+    flex: 1;
+}
+
+/* Toggle sidebar */
+#wrapper.toggled #sidebar-wrapper {
+    margin-left: -250px;
+}
+
+/* Custom scrollbar */
+#sidebar-wrapper::-webkit-scrollbar {
+    width: 5px;
+}
+
+#sidebar-wrapper::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Hover effect for sidebar items */
+.list-group-item-action:hover {
+    background-color: #343a40;
+    color: #ffc107;
+}
