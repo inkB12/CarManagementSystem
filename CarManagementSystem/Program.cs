@@ -1,6 +1,8 @@
 ﻿using CarManagementSystem.DataAccess;
+using CarManagementSystem.DataAccess.Repositories.Implements;
 using CarManagementSystem.DataAccess.Repositories.Interfaces;
 using CarManagementSystem.DataAccess.Repositories.Services;
+using CarManagementSystem.Services.Implements;
 using CarManagementSystem.Services.Interfaces;
 using CarManagementSystem.Services.Services;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +16,8 @@ builder.Services.AddDbContext<CarManagementDbContext>(options =>
 //Đăng ký các repository và service
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IOrderService, OrderService>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
