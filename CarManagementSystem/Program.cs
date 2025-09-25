@@ -16,13 +16,16 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ICarCompanyRepository, CarCompanyRepository>();
 builder.Services.AddScoped<IVehicleCategoryRepository, VehicleCategoryRepository>();
 builder.Services.AddScoped<IElectricVehicleRepository, ElectricVehicleRepository>();
+builder.Services.AddScoped<IPromotionRepository, PromotionRepository>();
+builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
 
 // ==================== Service ====================
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICarCompanyService, CarCompanyService>();
 builder.Services.AddScoped<IVehicleCategoryService, VehicleCategoryService>();
 builder.Services.AddScoped<IElectricVehicleService, ElectricVehicleService>();
-
+builder.Services.AddScoped<IPromotionService, PromotionService>();
+builder.Services.AddScoped<IFeedbackService, FeedbackService>();
 
 
 // Add services to the container.
