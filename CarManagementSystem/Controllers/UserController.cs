@@ -60,9 +60,20 @@ namespace CarManagementSystem.WebMVC.Controllers
             user.Phone = vm.Phone;
 
             if (!string.IsNullOrWhiteSpace(vm.Password))
-                user.Password = vm.Password; 
+            {
+                if (vm.Password.Length >= 6)
+                {
+                    user.Password = vm.Password;
+                }
+                else
+                {
+                    ModelState.AddModelError("Password", "Wrong format password (min 6 characters).");
+                    return View(vm);
+                }
+            }    
+            
 
-            var response = await _users.UpdateAsync(user);
+                var response = await _users.UpdateAsync(user);
             if (!response.ok)
             {
                 ModelState.AddModelError(string.Empty, response.message);
