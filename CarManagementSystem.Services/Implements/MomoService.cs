@@ -79,10 +79,5 @@ namespace CarManagementSystem.Services.Implements
 
             return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
         }
-
-        public MomoExecuteDTO PaymentExecuteAsync()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

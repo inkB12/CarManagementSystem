@@ -6,6 +6,5 @@ namespace CarManagementSystem.Services.Interfaces
     public interface IMomoService
     {
         Task<MomoResponseDTO> CreatePaymentAsync(Order order);
-        MomoExecuteDTO PaymentExecuteAsync();
     }
 }
