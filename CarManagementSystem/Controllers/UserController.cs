@@ -14,96 +14,69 @@ namespace CarManagementSystem.WebMVC.Controllers
             _users = users;
         }
 
-        public async Task<IActionResult> Index()
-        {
-            var data = await _users.GetAllAsync(onlyActive: false);
-            return View(data);
-        }
-
-        [HttpGet]
-        public IActionResult Create() => View(new UserCreateViewModel());
-
-        [ValidateAntiForgeryToken]
-        [HttpPost]
-        public async Task<IActionResult> Create(UserCreateViewModel vm)
-        {
-            if (!ModelState.IsValid) return View(vm);
-
-            var user = new User
-            {
-                Email = vm.Email.Trim(),
-                FullName = vm.FullName.Trim(),
-                Phone = vm.Phone,
-                Password = vm.Password, // service sẽ hash nếu là plain
-                Role = vm.Role,
-                IsActive = vm.IsActive
-            };
-
-            var res = await _users.CreateAsync(user);
-            if (!res.ok)
-            {
-                ModelState.AddModelError(string.Empty, res.message);
-                return View(vm);
-            }
-
-            TempData["msg"] = "Created";
-            return RedirectToAction(nameof(Index));
-        }
-
+        // GET: /Users/Edit/5
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            var u = await _users.GetByIdAsync(id);
-            if (u == null) return NotFound();
-
-            var vm = new UserEditViewModel
+            //user cố tình sửa id trên link thì cho nó về home
+            var sessionUserId = HttpContext.Session.GetInt32("UserId");
+            if (sessionUserId == null || sessionUserId != id)
             {
-                Id = u.Id,
-                Email = u.Email,
-                FullName = u.FullName,
-                Phone = u.Phone,
-                Role = u.Role,
-                IsActive = u.IsActive
+                return RedirectToAction("Index", "Home");
+            }
+
+            var user = await _users.GetByIdAsync(id);
+            if (user == null) return NotFound();
+
+            var vm = new UpdateUserViewModel
+            {
+                Id = user.Id,
+                FullName = user.FullName,
+                Email = user.Email,
+                Phone = user.Phone
             };
+
             return View(vm);
         }
 
-        [ValidateAntiForgeryToken]
+        // POST: /Users/Edit/{id}
         [HttpPost]
-        public async Task<IActionResult> Edit(UserEditViewModel vm)
+        public async Task<IActionResult> Edit(UpdateUserViewModel vm)
         {
+            //user cố tình sửa id trên link thì cho nó về home
+            var sessionUserId = HttpContext.Session.GetInt32("UserId");
+            if (sessionUserId == null || sessionUserId != vm.Id)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             if (!ModelState.IsValid) return View(vm);
 
-            var u = await _users.GetByIdAsync(vm.Id);
-            if (u == null) return NotFound();
+            var user = await _users.GetByIdAsync(vm.Id);
+            if (user == null) return NotFound();
 
-            u.Email = vm.Email.Trim();
-            u.FullName = vm.FullName.Trim();
-            u.Phone = vm.Phone;
-            u.Role = vm.Role;
-            u.IsActive = vm.IsActive;
-            u.Password = string.IsNullOrWhiteSpace(vm.Password) ? "" : vm.Password; // service sẽ giữ hash cũ nếu trống
+            user.FullName = vm.FullName;
+            user.Email = vm.Email;
+            user.Phone = vm.Phone;
 
-            var res = await _users.UpdateAsync(u);
-            if (!res.ok)
+            if (!string.IsNullOrWhiteSpace(vm.Password))
+                user.Password = vm.Password; 
+
+            var response = await _users.UpdateAsync(user);
+            if (!response.ok)
             {
-                ModelState.AddModelError(string.Empty, res.message);
+                ModelState.AddModelError(string.Empty, response.message);
                 return View(vm);
             }
 
-            TempData["msg"] = "Updated";
-            return RedirectToAction(nameof(Index));
-        }
+            // lưu vào session
+            HttpContext.Session.SetInt32("UserId", response.data.Id);
+            HttpContext.Session.SetString("UserEmail", response.data.Email);
+            HttpContext.Session.SetString("UserRole", response.data.Role);
+            HttpContext.Session.SetString("UserFullName", response.data.FullName);
 
-        [ValidateAntiForgeryToken]
-        [HttpPost]
-        public async Task<IActionResult> Delete(int id)
-        {
-            var res = await _users.DeleteAsync(id);
-            if (!res.ok) TempData["error"] = res.message;
-            else TempData["msg"] = "Deleted";
-
-            return RedirectToAction(nameof(Index));
+            TempData["msg"] = "Cập nhật thành công!";
+            return RedirectToAction("Index", "Home");
         }
     }
 }

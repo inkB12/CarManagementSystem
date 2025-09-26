@@ -74,7 +74,7 @@ namespace CarManagementSystem.Services.Services
 
         public async Task<(bool ok, string message, User? data)> UpdateAsync(User user)
         {
-            //chưa xử lý logic
+            user.Password = HashSHA256(user.Password);
             var updated = await _repo.UpdateAsync(user);
             return (true, "Updated", updated);
         }

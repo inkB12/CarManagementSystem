@@ -1,0 +1,29 @@
+﻿@model IEnumerable<CarManagementSystem.WebMVC.Models.FeedbackViewModel>
+@{
+    ViewData["Title"] = "Feedback";
+}
+<div class="container py-5">
+    <h1 class="mb-4 fw-bold">Phản hồi khách hàng</h1>
+
+    <a asp-action="Create" class="btn btn-success mb-4">
+        <i class="bi bi-plus-circle"></i> Gửi phản hồi
+    </a>
+
+    <div class="row g-4">
+        @foreach (var f in Model)
+        {
+            <div class="col-md-6 col-lg-4">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body">
+                        <span class="badge bg-primary">@f.FeedbackType</span>
+                        <small class="text-muted">@f.Datetime.ToString("dd/MM/yyyy HH:mm")</small>
+                        <p class="mt-3">@f.Content</p>
+                    </div>
+                    <div class="card-footer bg-light small text-muted">
+                        <i class="bi bi-person-circle me-1"></i>@f.UserName
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
