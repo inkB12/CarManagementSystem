@@ -2,12 +2,17 @@
 using CarManagementSystem.DataAccess.Repositories.Implements;
 using CarManagementSystem.DataAccess.Repositories.Interfaces;
 using CarManagementSystem.DataAccess.Repositories.Services;
+using CarManagementSystem.Services.Dtos.Momo;
 using CarManagementSystem.Services.Implements;
 using CarManagementSystem.Services.Interfaces;
 using CarManagementSystem.Services.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Kết nối Momo 
+builder.Services.Configure<MomoOptionDTO>(builder.Configuration.GetSection("MomoApi"));
+
 
 // Đăng ký DbContext
 builder.Services.AddDbContext<CarManagementDbContext>(options =>
@@ -30,6 +35,7 @@ builder.Services.AddScoped<IElectricVehicleService, ElectricVehicleService>();
 builder.Services.AddScoped<IPromotionService, PromotionService>();
 builder.Services.AddScoped<IFeedbackService, FeedbackService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IMomoService, MomoService>();
 
 
 // Add services to the container.

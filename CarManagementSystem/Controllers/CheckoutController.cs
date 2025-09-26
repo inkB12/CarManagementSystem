@@ -1,9 +1,11 @@
 ﻿using System.Threading.Tasks;
 using CarManagementSystem.BusinessObjects;
+using CarManagementSystem.Services.Dtos.Momo;
 using CarManagementSystem.Services.Interfaces;
 using CarManagementSystem.WebMVC.Models;
 using CarManagementSystem.WebMVC.Models.Checkout;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace CarManagementSystem.WebMVC.Controllers
 {
@@ -11,10 +13,12 @@ namespace CarManagementSystem.WebMVC.Controllers
     public class CheckoutController : Controller
     {
         private readonly IOrderService _orderService;
+        private readonly IMomoService _momoService;
 
-        public CheckoutController(IOrderService orderService)
+        public CheckoutController(IOrderService orderService, IMomoService momoService)
         {
             _orderService = orderService;
+            _momoService = momoService;
         }
 
         [HttpGet]
@@ -37,29 +41,89 @@ namespace CarManagementSystem.WebMVC.Controllers
         {
             if (!ModelState.IsValid)
             {
+                // For test only
+                var momoResponse = await _momoService.CreatePaymentAsync(null);
+
+                if (momoResponse != null && !momoResponse.PayUrl.IsNullOrEmpty())
+                {
+                    return Redirect(momoResponse.PayUrl);
+                }
+
                 // Check dữ liệu ko hợp lệ thì trả về View tb lỗi
                 return View(model);
             }
-
-            // Create Order
-            var response = await _orderService.CreateAsync(new Order()
+            else
             {
-                PaymentMethod = model.PaymentMethod,
-                Address = model.AddressInfo.Address,
-                ZipCode = model.AddressInfo.ZipCode,
-                Note = model.AddressInfo.Note,
-                PromotionId = model.PromotionId,
-            });
+                // Create Order
+                var response = await _orderService.CreateAsync(new Order()
+                {
+                    PaymentMethod = model.PaymentMethod,
+                    Address = model.AddressInfo.Address,
+                    ZipCode = model.AddressInfo.ZipCode,
+                    Note = model.AddressInfo.Note,
+                    PromotionId = model.PromotionId,
+                });
 
-            if (response.ok)
+                if (response.ok)
+                {
+                    var createdOrder = response.data;
+                    var paymentUrl = "url";
+                }
+                return View(model);
+            }
+        }
+
+        /// <summary>
+        /// Momo Callback to BE Action (Momo cannot access localhost so cannot test here)
+        /// </summary>
+        /// <param name="momoResponse"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("momo-ipn")]
+        public async Task<IActionResult> MomoIpn([FromBody] MomoResponseDTO momoResponse)
+        {
+            if (momoResponse == null)
             {
-                var createdOrder = response.data;
-                var paymentUrl = "url";
+                return BadRequest();
             }
 
-            
+            if (momoResponse.ResultCode == 0)
+            {
+                // Succesful Payment
+            }
 
-            return Redirect(paymentUrl);
+            return Ok();
+        }
+
+        /// <summary>
+        /// Momo Redirect User to Success/Fail View
+        /// </summary>
+        /// <param name="resultCode"></param>
+        /// <param name="orderId"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("momo-redirect")]
+        public async Task<IActionResult> MomoRedirect(int resultCode, string orderId)
+        {
+            string paymentMessage;
+
+            if (resultCode == 0)
+            {
+                // Succesful Payment
+                paymentMessage = "Đơn hàng thanh toán thành công";
+            }
+            else
+            {
+                // Fail Payment
+                paymentMessage = "Đơn hàng thanh toán thất bại";
+            }
+
+            ViewBag.PaymentMessage = paymentMessage;
+            ViewBag.OrderId = orderId;
+            ViewBag.ResultCode = resultCode;
+
+            return View();
         }
     }
 }
