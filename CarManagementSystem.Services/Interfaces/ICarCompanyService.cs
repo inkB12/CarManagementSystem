@@ -1,4 +1,5 @@
-﻿using CarManagementSystem.DataAccess;
+﻿using CarManagementSystem.BusinessObjects;
+using CarManagementSystem.DataAccess;
 
 namespace CarManagementSystem.Services.Interfaces
 {

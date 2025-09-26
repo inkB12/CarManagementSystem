@@ -1,0 +1,25 @@
+﻿@{
+	ViewData["Title"] = "PaymentResult";
+}
+
+<div class="text-center mt-5">
+	<h2>Thông báo giao dịch</h2>
+	<hr />
+
+	@if (ViewBag.ResultCode == 0)
+	{
+		<h3 class="mt-4 text-success">
+			<i class="fas fa-check-circle"></i>@ViewBag.PaymentMessage
+		</h3>
+	}
+	else
+	{
+		<h3 class="mt-4 text-danger">
+			<i class="fas fa-times-circle"></i>@ViewBag.PaymentMessage
+		</h3>
+	}
+
+	<p>Mã đơn hàng: @ViewBag.OrderId</p>
+
+	<a href="/" class="btn btn-primary mt-3">Quay về trang chủ</a>
+</div>

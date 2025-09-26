@@ -1,5 +1,6 @@
 ﻿
 using System.Linq.Expressions;
+using CarManagementSystem.BusinessObjects;
 
 
 namespace CarManagementSystem.DataAccess.Repositories.Interfaces

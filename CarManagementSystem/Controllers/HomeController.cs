@@ -1,5 +1,4 @@
-﻿using CarManagementSystem.DataAccess.Repositories.Interfaces;
-using CarManagementSystem.Services.Interfaces;
+﻿using CarManagementSystem.Services.Interfaces;
 using CarManagementSystem.WebMVC.Models;
 using Microsoft.AspNetCore.Mvc;
 

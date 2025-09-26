@@ -1,5 +1,4 @@
-﻿using CarManagementSystem.DataAccess;
-using System.Collections.Generic;
+﻿using CarManagementSystem.BusinessObjects;
 
 namespace CarManagementSystem.WebMVC.Models
 {
