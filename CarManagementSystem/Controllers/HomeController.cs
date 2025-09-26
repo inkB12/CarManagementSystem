@@ -70,6 +70,14 @@ namespace CarManagementSystem.WebMVC.Controllers // sửa theo namespace WebMVC 
                 new NewsItemVM { Title="Bảo dưỡng pin", Summary="Giữ dung lượng tối ưu.",
                                  ImageUrl="https://greencharge.vn/wp-content/uploads/2023/05/bao-tri-pin-xe-dien-1.jpg", Url="/News/4"},
             };
+            // lấy 3 feedback mới nhất
+            var recentFeedbacks = await _context.Feedbacks
+                .Include(f => f.User)
+                .OrderByDescending(f => f.Datetime)
+                .Take(3)
+                .ToListAsync();
+
+            ViewBag.RecentFeedbacks = recentFeedbacks;
 
 
             return View(vm);
