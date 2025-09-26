@@ -1,36 +1,141 @@
 ﻿@model CarManagementSystem.WebMVC.Models.ElectricVehicleListViewModel
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
 <div class="container py-5">
-    <h2 class="fw-bold text-primary border-bottom pb-2 mb-4">Danh sách xe điện</h2>
-
     <div class="row g-4">
-        @foreach (var v in Model.Vehicles)
-        {
-            <div class="col-12 col-sm-6 col-lg-4">
-                <div class="card h-100 shadow-sm">
-                    <img src="@(string.IsNullOrWhiteSpace(v.ImageUrl) ? "https://placehold.co/600x400?text=EV" : v.ImageUrl)"
-                         class="card-img-top object-cover" style="height:220px;" alt="@v.Model" />
+        <!-- ====== Sidebar (filters) ====== -->
+        <aside class="col-12 col-lg-3">
+            <div class="position-sticky" style="top: 90px;">
+                <div class="card shadow-sm border-0">
                     <div class="card-body">
-                        <div class="small text-muted">@v.CarCompany?.CatalogName</div>
-                        <h3 class="h6 mb-1">@v.Model (@v.Version)</h3>
-                        <div class="fw-bold text-primary mb-2">@v.Price.ToString("C0")</div>
-                        <p class="small text-secondary text-truncate-3">@v.Specification</p>
-                        <a href="/ElectricVehicles/Details/@v.Id" class="btn btn-primary w-100">Xem chi tiết</a>
+                        <h5 class="card-title mb-3">Bộ lọc</h5>
+
+                        <form method="get" class="vstack gap-3">
+                            <!-- Hãng xe -->
+                            <div>
+                                <label class="form-label fw-semibold">Hãng xe</label>
+                                <select name="companyId" class="form-select">
+                                    <option value="">-- Tất cả --</option>
+                                    @foreach (var opt in Model.CompanyOptions)
+                                    {
+                                        <option value="@opt.Value" selected="@(opt.Selected ? "selected" : null)">@opt.Text</option>
+                                    }
+                                </select>
+                            </div>
+
+                            <!-- Loại xe -->
+                            <div>
+                                <label class="form-label fw-semibold">Danh mục</label>
+                                <select name="categoryId" class="form-select">
+                                    <option value="">-- Tất cả --</option>
+                                    @foreach (var opt in Model.CategoryOptions)
+                                    {
+                                        <option value="@opt.Value" selected="@(opt.Selected ? "selected" : null)">@opt.Text</option>
+                                    }
+                                </select>
+                            </div>
+
+                            <!-- Hidden để giữ từ khoá & page -->
+                            <input type="hidden" name="q" value="@Model.Q" />
+                            <input type="hidden" name="page" value="1" />
+
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-primary">Áp dụng</button>
+                                <a href="/ElectricVehicles" class="btn btn-outline-secondary">Xoá bộ lọc</a>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
-        }
-    </div>
+        </aside>
 
-    <!-- Pagination -->
-    <nav class="mt-4">
-        <ul class="pagination justify-content-center">
-            @for (int i = 1; i <= Model.TotalPages; i++)
+        <!-- ====== Main content ====== -->
+        <section class="col-12 col-lg-9">
+            <!-- Search bar -->
+            <form method="get" class="input-group mb-3 shadow-sm">
+                <span class="input-group-text bg-white border-end-0">
+                    <i class="bi bi-search"></i>
+                </span>
+                <input name="q" value="@Model.Q" class="form-control border-start-0" placeholder="Tìm model, hãng, thông số..." />
+                <input type="hidden" name="companyId" value="@Model.CompanyId" />
+                <input type="hidden" name="categoryId" value="@Model.CategoryId" />
+                <button class="btn btn-primary">Tìm</button>
+            </form>
+
+            <!-- Summary -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="text-muted small">
+                    Tìm thấy <strong>@Model.TotalCount</strong> xe
+                    @if (Model.CompanyId.HasValue)
+                    {
+                        <span> • hãng: <strong>@Model.CompanyOptions.FirstOrDefault(o => o.Selected)?.Text</strong></span>
+                    }
+                    @if (Model.CategoryId.HasValue)
+                    {
+                        <span> • danh mục: <strong>@Model.CategoryOptions.FirstOrDefault(o => o.Selected)?.Text</strong></span>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(Model.Q))
+                    {
+                        <span> • từ khoá: “<strong>@Model.Q</strong>”</span>
+                    }
+                </div>
+                <a class="btn btn-outline-primary btn-sm" href="/">← Về trang chủ</a>
+            </div>
+
+            <!-- Grid 6 sản phẩm/trang -->
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                @foreach (var v in Model.Vehicles)
+                {
+                    <div class="col">
+                        <div class="card h-100 shadow-sm">
+                            <img src="@(string.IsNullOrWhiteSpace(v.ImageUrl) ? "https://placehold.co/600x400?text=EV" : v.ImageUrl)"
+                                 class="card-img-top object-cover" style="height:220px;" alt="@v.Model" />
+                            <div class="card-body">
+                                <div class="small text-muted">@v.CarCompany?.CatalogName</div>
+                                <h3 class="h6 mb-1">@v.Model @(!string.IsNullOrWhiteSpace(v.Version) ? $"({v.Version})" : "")</h3>
+                                <div class="fw-bold text-primary mb-2">@v.Price.ToString("C0")</div>
+                                <p class="small text-secondary text-truncate-3">@v.Specification</p>
+                                <a href="/ElectricVehicles/Details/@v.Id" class="btn btn-primary w-100">Xem chi tiết</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- Pagination (giữ lại filter & keyword) -->
+            @if (Model.TotalPages > 1)
             {
-                <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
-                    <a class="page-link" href="?page=@i">@i</a>
-                </li>
+                <nav class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        @{
+                            string link(int p) => Url.Action("Index", new
+                            {
+                                page = p,
+                                pageSize = Model.PageSize,
+                                companyId = Model.CompanyId,
+                                categoryId = Model.CategoryId,
+                                q = Model.Q
+                            })!;
+                        }
+
+                        <li class="page-item @(Model.CurrentPage <= 1 ? "disabled" : "")">
+                            <a class="page-link" href="@(Model.CurrentPage > 1 ? link(Model.CurrentPage - 1) : "#")">Trước</a>
+                        </li>
+
+                        @for (int i = 1; i <= Model.TotalPages; i++)
+                        {
+                            <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                                <a class="page-link" href="@link(i)">@i</a>
+                            </li>
+                        }
+
+                        <li class="page-item @(Model.CurrentPage >= Model.TotalPages ? "disabled" : "")">
+                            <a class="page-link" href="@(Model.CurrentPage < Model.TotalPages ? link(Model.CurrentPage + 1) : "#")">Sau</a>
+                        </li>
+                    </ul>
+                </nav>
             }
-        </ul>
-    </nav>
+        </section>
+    </div>
 </div>

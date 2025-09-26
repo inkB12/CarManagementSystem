@@ -38,12 +38,13 @@ namespace CarManagementSystem.WebMVC.Controllers
             {
                 Companies = await _companyService.GetAllAsync(true),
                 Categories = await _categoryService.GetAllAsync(true),
-                FeaturedVehicles = featured,
+                FeaturedVehicles = (await _vehicleService.GetAllAsync()).Take(6).ToList(),
                 ActivePromotions = (await _promotionService.GetAllAsync(true))
-                                    .Where(p => (p.Status ?? "").Equals("Active", StringComparison.OrdinalIgnoreCase))
-                                    .OrderByDescending(p => p.Id)
-                                    .ToList(),
+                            .Where(p => (p.Status ?? "").Equals("Active", StringComparison.OrdinalIgnoreCase))
+                            .OrderByDescending(p => p.Id)
+                            .ToList(),
             };
+
 
             // ----- Banner code-cứng của bạn -----
             vm.HeroImages = new()
@@ -74,11 +75,10 @@ namespace CarManagementSystem.WebMVC.Controllers
 
             // 3 feedback mới nhất (qua service)
             var latest3 = (await _feedbackService.GetAllAsync())
-                          .OrderByDescending(f => f.Datetime)
-                          .Take(3)
-                          .ToList();
+                 .OrderByDescending(f => f.Datetime)
+                 .Take(3)
+                 .ToList();
             ViewBag.RecentFeedbacks = latest3;
-
             return View(vm);
         }
     }
