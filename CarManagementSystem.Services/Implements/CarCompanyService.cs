@@ -10,10 +10,12 @@ namespace CarManagementSystem.Services.Services
     {
 
         private readonly ICarCompanyRepository _repo;
+        private readonly IElectricVehicleRepository _evRepo;
 
-        public CarCompanyService(ICarCompanyRepository repo)
+        public CarCompanyService(ICarCompanyRepository repo, IElectricVehicleRepository evRepo)
         {
             _repo = repo;
+            _evRepo = evRepo;
         }
 
         public async Task<List<CarCompany>> GetAllAsync(bool onlyActive = true)
@@ -52,8 +54,19 @@ namespace CarManagementSystem.Services.Services
 
         public async Task<(bool ok, string message)> DeleteAsync(int id)
         {
+            var company = await _repo.GetByIdAsync(id);
+            if (company == null)
+                return (false, "Không tìm thấy hãng xe");
+
+            // ✅ Kiểm tra có ElectricVehicle nào tham chiếu tới CarCompanyId này không
+            var vehicles = await _evRepo.GetAllAsync(ev => ev.CarCompanyId == id);
+            if (vehicles.Any())
+            {
+                return (false, $"Không thể xóa hãng xe {company.CatalogName} vì vẫn còn xe thuộc hãng này");
+            }
+
             var ok = await _repo.DeleteAsync(id);
-            return ok ? (true, "Deleted") : (false, "Not found");
+            return ok ? (true, "Đã xóa thành công") : (false, "Xóa thất bại");
         }
     }
 }
