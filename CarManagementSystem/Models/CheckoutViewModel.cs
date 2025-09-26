@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using CarManagementSystem.WebMVC.Models.Cart;
 using CarManagementSystem.WebMVC.Models.Checkout;
 
 namespace CarManagementSystem.WebMVC.Models
@@ -7,6 +8,7 @@ namespace CarManagementSystem.WebMVC.Models
     {
         public CustomerInfoModel? CustomerInfo { get; set; }
         public AddressInfoModel? AddressInfo { get; set; }
+        public List<CartItem> CartItems { get; set; } = [];
         [Required]
         public string? PaymentMethod { get; set; }
         public int? PromotionId { get; set; }

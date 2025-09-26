@@ -38,7 +38,7 @@ namespace CarManagementSystem.WebMVC.Controllers
         {
             if (!ModelState.IsValid) return View(vm);
 
-            var entity = new CarManagementSystem.DataAccess.Feedback
+            var entity = new BusinessObjects.Feedback
             {
                 FeedbackType = vm.FeedbackType,
                 Content = vm.Content,
