@@ -1,0 +1,36 @@
+﻿@model CarManagementSystem.WebMVC.Models.ElectricVehicleListViewModel
+
+<div class="container py-5">
+    <h2 class="fw-bold text-primary border-bottom pb-2 mb-4">Danh sách xe điện</h2>
+
+    <div class="row g-4">
+        @foreach (var v in Model.Vehicles)
+        {
+            <div class="col-12 col-sm-6 col-lg-4">
+                <div class="card h-100 shadow-sm">
+                    <img src="@(string.IsNullOrWhiteSpace(v.ImageUrl) ? "https://placehold.co/600x400?text=EV" : v.ImageUrl)"
+                         class="card-img-top object-cover" style="height:220px;" alt="@v.Model" />
+                    <div class="card-body">
+                        <div class="small text-muted">@v.CarCompany?.CatalogName</div>
+                        <h3 class="h6 mb-1">@v.Model (@v.Version)</h3>
+                        <div class="fw-bold text-primary mb-2">@v.Price.ToString("C0")</div>
+                        <p class="small text-secondary text-truncate-3">@v.Specification</p>
+                        <a href="/ElectricVehicles/Details/@v.Id" class="btn btn-primary w-100">Xem chi tiết</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Pagination -->
+    <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                    <a class="page-link" href="?page=@i">@i</a>
+                </li>
+            }
+        </ul>
+    </nav>
+</div>

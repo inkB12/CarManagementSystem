@@ -162,10 +162,11 @@
     <div class="row g-4">
         @foreach (var v in Model.FeaturedVehicles)
         {
-            <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+            <div class="col-12 col-sm-6 col-lg-4">
+                <!-- 3 cột ở >=lg -->
                 <div class="card h-100 shadow-sm">
                     <img src="@(string.IsNullOrWhiteSpace(v.ImageUrl) ? "https://placehold.co/600x400?text=EV" : v.ImageUrl)"
-                         class="card-img-top object-cover" style="height:190px;" alt="@v.Model" />
+                         class="card-img-top object-cover" style="height:220px;" alt="@v.Model" />
                     <div class="card-body">
                         <div class="small text-muted">@v.CarCompany?.CatalogName</div>
                         <h3 class="h6 mb-1">@v.Model (@v.Version)</h3>
@@ -178,6 +179,7 @@
         }
     </div>
 </section>
+
 
 <!-- ===================== FEEDBACK-BANNER ===================== -->
 <section class="feedback-banner py-5 bg-light border-top">
