@@ -1,6 +1,8 @@
 ﻿
 
-namespace CarManagementSystem.DataAccess.Repositories.Interfaces
+using CarManagementSystem.DataAccess;
+
+namespace CarManagementSystem.Services.Interfaces
 {
     public interface IElectricVehicleService
     {
