@@ -5,30 +5,42 @@
     ViewData["Title"] = "Dashboard";
 }
 
-<div class="row">
-    <div class="col-md-4 mb-3">
-        <div class="card text-white bg-primary">
-            <div class="card-body">
-                <h5 class="card-title">Hãng xe</h5>
-                <p class="card-text fs-4">@Model.TotalCarCompanies</p>
+<div class="row g-4">
+    <!-- Hãng xe -->
+    <div class="col-md-4">
+        <div class="card-stats orange d-flex align-items-center">
+            <div class="me-3">
+                <i class="bi bi-building fs-1"></i>
+            </div>
+            <div>
+                <h6 class="mb-1">Hãng xe</h6>
+                <h4 class="mb-0">@Model.TotalCarCompanies</h4>
             </div>
         </div>
     </div>
 
-    <div class="col-md-4 mb-3">
-        <div class="card text-white bg-warning">
-            <div class="card-body">
-                <h5 class="card-title">Danh mục xe</h5>
-                <p class="card-text fs-4">@Model.TotalCategories</p>
+    <!-- Danh mục xe -->
+    <div class="col-md-4">
+        <div class="card-stats blue d-flex align-items-center">
+            <div class="me-3">
+                <i class="bi bi-list-ul fs-1"></i>
+            </div>
+            <div>
+                <h6 class="mb-1">Danh mục xe</h6>
+                <h4 class="mb-0">@Model.TotalCategories</h4>
             </div>
         </div>
     </div>
 
-    <div class="col-md-4 mb-3">
-        <div class="card text-white bg-success">
-            <div class="card-body">
-                <h5 class="card-title">Tổng số xe</h5>
-                <p class="card-text fs-4">@Model.TotalVehicles</p>
+    <!-- Tổng số xe -->
+    <div class="col-md-4">
+        <div class="card-stats green d-flex align-items-center">
+            <div class="me-3">
+                <i class="bi bi-truck-front fs-1"></i>
+            </div>
+            <div>
+                <h6 class="mb-1">Tổng số xe</h6>
+                <h4 class="mb-0">@Model.TotalVehicles</h4>
             </div>
         </div>
     </div>

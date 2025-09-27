@@ -1,0 +1,61 @@
+﻿@model CarManagementSystem.WebMVC.Models.VehicleViewModel
+@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    ViewData["Title"] = "Thêm xe điện";
+}
+
+<h2>Thêm xe điện</h2>
+
+<form asp-action="Create" method="post" enctype="multipart/form-data" novalidate>
+    <div class="mb-3">
+        <label asp-for="Model" class="form-label"></label>
+        <input asp-for="Model" class="form-control" />
+        <span asp-validation-for="Model" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Version" class="form-label"></label>
+        <input asp-for="Version" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Price" class="form-label"></label>
+        <input asp-for="Price" class="form-control" />
+        <span asp-validation-for="Price" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Specification" class="form-label"></label>
+        <textarea asp-for="Specification" class="form-control"></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Color" class="form-label"></label>
+        <input asp-for="Color" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="ImageFile" class="form-label">Ảnh xe</label>
+        <input asp-for="ImageFile" type="file" class="form-control" accept="image/*" onchange="previewImage(event)" />
+
+        <!-- Nơi hiển thị ảnh -->
+        <div class="mt-2">
+            <img id="preview" src="#" alt="Ảnh xem trước" style="max-width: 300px; display: none;" />
+        </div>
+    </div>
+
+
+    <div class="mb-3">
+        <label asp-for="CarCompanyId" class="form-label">Hãng xe</label>
+        <select asp-for="CarCompanyId" asp-items="ViewBag.CarCompanies" class="form-select"></select>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="VehicleCategoryId" class="form-label">Danh mục</label>
+        <select asp-for="VehicleCategoryId" asp-items="ViewBag.Categories" class="form-select"></select>
+    </div>
+
+
+    <button type="submit" class="btn btn-success">Lưu</button>
+    <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+</form>

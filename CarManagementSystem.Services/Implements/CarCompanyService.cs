@@ -10,10 +10,12 @@ namespace CarManagementSystem.Services.Services
     {
 
         private readonly ICarCompanyRepository _repo;
+        private readonly IElectricVehicleRepository _evRepo;
 
-        public CarCompanyService(ICarCompanyRepository repo)
+        public CarCompanyService(ICarCompanyRepository repo, IElectricVehicleRepository evRepo)
         {
             _repo = repo;
+            _evRepo = evRepo;
         }
 
         public async Task<List<CarCompany>> GetAllAsync(bool onlyActive = true)
@@ -32,28 +34,56 @@ namespace CarManagementSystem.Services.Services
 
         public async Task<(bool ok, string message, CarCompany? data)> CreateAsync(CarCompany company)
         {
-            company.IsActive = true;
-            var saved = await _repo.CreateAsync(company);
-            return (true, "Created", saved);
+            try
+            {
+                company.IsActive = true; // luôn mặc định true
+                var saved = await _repo.CreateAsync(company);
+                return (true, "Thêm hãng xe thành công", saved);
+            }
+            catch (Exception ex)
+            {
+                return (false, $"Thêm hãng xe thất bại: {ex.Message}", null);
+            }
         }
 
         public async Task<(bool ok, string message, CarCompany? data)> UpdateAsync(CarCompany company)
         {
             var existed = await _repo.GetByIdAsync(company.Id);
-            if (existed == null) return (false, "Not found", null);
+            if (existed == null) return (false, "Không tìm thấy hãng xe", null);
 
-            existed.CatalogName = company.CatalogName?.Trim();
-            existed.Description = company.Description;
-            existed.IsActive = company.IsActive;
+            try
+            {
+                // ❌ Không cho cập nhật IsActive
+                existed.CatalogName = company.CatalogName?.Trim();
+                existed.Description = company.Description;
 
-            var updated = await _repo.UpdateAsync(existed);
-            return (true, "Updated", updated);
+                var updated = await _repo.UpdateAsync(existed);
+                return (true, "Cập nhật hãng xe thành công", updated);
+            }
+            catch (Exception ex)
+            {
+                return (false, $"Cập nhật hãng xe thất bại: {ex.Message}", null);
+            }
         }
 
         public async Task<(bool ok, string message)> DeleteAsync(int id)
         {
-            var ok = await _repo.DeleteAsync(id);
-            return ok ? (true, "Deleted") : (false, "Not found");
+            var company = await _repo.GetByIdAsync(id);
+            if (company == null)
+                return (false, "Không tìm thấy hãng xe");
+
+            try
+            {
+                // ❌ Không xóa thật, chỉ set IsActive = false
+                company.IsActive = false;
+                await _repo.UpdateAsync(company);
+
+                return (true, $"Đã ngưng hoạt động hãng xe {company.CatalogName}");
+            }
+            catch (Exception ex)
+            {
+                return (false, $"Xóa hãng xe thất bại: {ex.Message}");
+            }
         }
     }
 }

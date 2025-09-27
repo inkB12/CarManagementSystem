@@ -1,4 +1,4 @@
-﻿using CarManagementSystem.DataAccess.Repositories.Interfaces;
+﻿using CarManagementSystem.Services.Interfaces;
 using CarManagementSystem.WebMVC.Extensions;
 using CarManagementSystem.WebMVC.Models;
 using CarManagementSystem.WebMVC.Models.Cart;

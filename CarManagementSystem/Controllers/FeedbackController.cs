@@ -1,4 +1,5 @@
-﻿using CarManagementSystem.Services.Interfaces;
+﻿using CarManagementSystem.BusinessObjects;
+using CarManagementSystem.Services.Interfaces;
 using CarManagementSystem.WebMVC.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -38,7 +39,7 @@ namespace CarManagementSystem.WebMVC.Controllers
         {
             if (!ModelState.IsValid) return View(vm);
 
-            var entity = new BusinessObjects.Feedback
+            var entity = new Feedback
             {
                 FeedbackType = vm.FeedbackType,
                 Content = vm.Content,

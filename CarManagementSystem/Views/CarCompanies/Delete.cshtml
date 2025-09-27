@@ -1,0 +1,18 @@
+﻿@model CarManagementSystem.WebMVC.Models.CarCompanyViewModel
+@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    ViewData["Title"] = "Delete Car Company";
+}
+
+<h2>Xóa hãng xe</h2>
+
+<div class="alert alert-danger">
+    Bạn có chắc chắn muốn xóa hãng xe <strong>@Model.CatalogName</strong>?
+</div>
+
+<form asp-action="Delete" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Đồng ý, Xóa</button>
+    <a asp-action="Index" class="btn btn-secondary">Hủy</a>
+</form>

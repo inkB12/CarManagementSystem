@@ -1,0 +1,57 @@
+﻿@using CarManagementSystem.WebMVC.Models
+@model List<VehicleViewModel>
+
+@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    ViewData["Title"] = "Quản lý xe điện";
+}
+
+<h2>Quản lý xe điện</h2>
+
+<!-- Hiển thị thông báo -->
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+
+<a asp-action="Create" class="btn btn-primary mb-3">+ Thêm xe</a>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Ảnh</th>
+            <th>Mẫu xe</th>
+            <th>Phiên bản</th>
+            <th>Giá bán</th>
+            <th>Màu sắc</th>
+            <th>Hoạt động</th>
+            <th>Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @if (!string.IsNullOrEmpty(item.ImageUrl))
+                    {
+                        <img src="@item.ImageUrl" alt="Ảnh xe" style="max-width:100px;" />
+                    }
+                </td>
+                <td>@item.Model</td>
+                <td>@item.Version</td>
+                <td>@string.Format("{0:N0} VND", item.Price)</td>
+                <td>@item.Color</td>
+                <td>@(item.IsActive ? "✔️" : "❌")</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Sửa</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Xóa</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
