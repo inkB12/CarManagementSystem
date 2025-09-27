@@ -83,5 +83,29 @@ namespace CarManagementSystem.WebMVC.Controllers
 
             return View(vm);
         }
-    }
+
+        public async Task<IActionResult> Details(int id)
+        {
+            var v = await _vehicleSvc.GetByIdAsync(id);
+            if (v == null) return NotFound();
+
+            var vm = new ElectricVehicleDetailVM
+            {
+                Id = v.Id,
+                Model = v.Model,
+                Version = v.Version,
+                Price = v.Price,
+                ImageUrl = string.IsNullOrWhiteSpace(v.ImageUrl) ? null : v.ImageUrl,
+                Color = v.Color,
+                CompanyName = v.CarCompany?.CatalogName ?? v.CarCompany?.ToString() ?? "N/A",
+                CategoryName = v.VehicleCategory?.CategoryName ?? "N/A",
+                Specification = v.Specification,
+                SpecLines = (v.Specification ?? "")
+                            .Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries)
+                            .Select(s => s.Trim('•', '-', ' ')).Where(s => !string.IsNullOrWhiteSpace(s)).ToList()
+            };
+
+            return View(vm);
+            }
+        }
 }

@@ -77,6 +77,13 @@ namespace CarManagementSystem.WebMVC.Controllers
             var latest3 = (await _feedbackService.GetAllAsync())
                  .OrderByDescending(f => f.Datetime)
                  .Take(3)
+                 .Select(f => new FeedbackCardVM
+                 {
+                     FeedbackType = f.FeedbackType,
+                     Content = f.Content,
+                     UserFullName = f.User?.FullName ?? $"User #{f.UserId}",
+                     Datetime = f.Datetime
+                 })
                  .ToList();
             ViewBag.RecentFeedbacks = latest3;
             return View(vm);
