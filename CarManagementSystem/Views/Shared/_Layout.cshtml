@@ -46,6 +46,12 @@
                                     <span class="text-dark">User:</span>
                                     <span class="text-danger">@Context.Session.GetString("UserFullName")</span>
                                 </a>
+                                <a class="btn btn-light border ms-2"
+                                   asp-controller="Order"
+                                   asp-action="UserOrder"
+                                   asp-route-id="@Context.Session.GetInt32("UserId")">
+                                    <span class="text-dark">Đơn hàng</span>
+                                </a>
                             </li>
 
                             <li class="nav-item"><a class="nav-link" asp-controller="Auth" asp-action="Logout">Đăng xuất</a></li>

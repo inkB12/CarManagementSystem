@@ -7,6 +7,7 @@ namespace CarManagementSystem.DataAccess.Repositories.Interfaces
     public interface IOrderRepository
     {
         Task<Order> GetByIdAsync(int id);
+        Task<List<Order>> GetByUserIdAsync(int id);
         Task<List<Order>> GetAllAsync(Expression<Func<Order, bool>>? predicate = null);
         Task<Order> CreateAsync(Order order);
         Task<Order> UpdateAsync(Order order);

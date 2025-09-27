@@ -48,6 +48,22 @@ namespace CarManagementSystem.DataAccess.Repositories.Implements
 
         public async Task<Order> GetByIdAsync(int id) => await _context.Orders.FirstOrDefaultAsync(o => o.Id == id);
 
+        public async Task<List<Order>> GetByUserIdAsync(int id)
+        {
+            if (id == 0)
+            {
+                return await GetAllAsync();
+            }
+
+            return await _context.Orders
+                .AsNoTracking()
+                .Where(o => o.UserId == id)
+                .Include(o => o.Promotion)
+                .Include(o => o.OrderDetails).ThenInclude(od => od.ElectricVehicle)
+                .Include(o => o.User)
+                .ToListAsync();
+        }
+
         public Task<int> SaveChangeAsync() => _context.SaveChangesAsync();
 
 

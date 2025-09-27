@@ -44,6 +44,11 @@ namespace CarManagementSystem.Services.Implements
             return await _orderRepository.GetByIdAsync(orderId);
         }
 
+        public async Task<List<Order>> GetOrderByUserIdAsync(int userId)
+        {
+            return await _orderRepository.GetByUserIdAsync(userId);
+        }
+
         public async Task<(bool ok, string message, Order? data)> UpdateAsync(Order order)
         {
             var existedOrder = await GetOrderByIdAsync(order.Id);
