@@ -128,20 +128,60 @@
 <!-- ===================== PROMOTION-BANNER ===================== -->
 @if (Model.ActivePromotions.Any())
 {
-    <section class="py-5 bg-primary-subtle border-top border-bottom">
+    <section id="promotions" style="scroll-margin-top: 96px; class="py-5 bg-primary-subtle border-top border-bottom">
         <div class="container">
             <h2 class="fw-bold text-primary border-bottom pb-2">Khuyến mãi</h2>
+
+            <style>
+                .promo-text {
+                    min-width: 0;
+                    overflow-wrap: anywhere;
+                    word-break: break-word;
+                }
+
+                .promo-desc {
+                    display: -webkit-box;
+                    -webkit-line-clamp: 2;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+
+                .promo-badge {
+                    flex-shrink: 0;
+                }
+
+                .promo-card {
+                    border-radius: .75rem;
+                    box-shadow: 0 4px 16px rgba(0,0,0,.05);
+                }
+
+                .copy-btn {
+                    cursor: pointer;
+                }
+            </style>
+
             <div class="row g-3">
                 @foreach (var p in Model.ActivePromotions)
                 {
                     <div class="col-12 col-md-6 col-xl-4">
-                        <div class="alert alert-primary shadow-sm m-0">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <div class="fw-bold">Mã: @p.Code</div>
-                                    <div class="small">@p.Description</div>
+                        <div class="alert alert-primary promo-card m-0">
+                            <div class="d-flex justify-content-between align-items-start gap-3">
+                                <!-- text column -->
+                                <div class="promo-text">
+                                    <div class="fw-bold d-flex align-items-center gap-2">
+                                        Mã: <span id="code-@p.Id">@p.Code</span>
+                                        <i class="bi bi-clipboard copy-btn text-primary"
+                                           title="Copy"
+                                           onclick="copyCode('@p.Id')"></i>
+                                    </div>
+                                    <div class="small promo-desc" title="@p.Description">
+                                        @p.Description
+                                    </div>
                                 </div>
-                                <span class="badge bg-white text-primary border">
+
+                                <!-- badge column -->
+                                <span class="badge bg-white text-primary border promo-badge">
                                     -@($"{p.Discount:0.#}")%
                                 </span>
                             </div>
@@ -151,7 +191,18 @@
             </div>
         </div>
     </section>
+
+    <script>
+        function copyCode(id) {
+            var codeText = document.getElementById("code-" + id).innerText;
+            navigator.clipboard.writeText(codeText).then(() => {
+                alert("Đã copy mã: " + codeText);
+            });
+        }
+    </script>
 }
+
+
 
 <!-- ===================== FEATURE-BANNER (Xe nổi bật) ===================== -->
 @using System.Linq
