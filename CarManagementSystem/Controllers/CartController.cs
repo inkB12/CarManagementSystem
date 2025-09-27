@@ -15,35 +15,6 @@ namespace CarManagementSystem.WebMVC.Controllers
             _vehicleService = vehicleService;
         }
 
-        public IActionResult MockCart()
-        {
-            var mockCartItems = new List<CartItem>
-        {
-            new CartItem
-            {
-                CarId = 1,
-                CarName = "Xe Điện Takashi Mono - Đen bóng",
-                Price = 13990000,
-                Quantity = 1,
-                ImageUrl = "/images/car_mock_1.jpg" // Đổi đường dẫn ảnh thực tế của bạn
-            },
-            new CartItem
-            {
-                CarId = 2,
-                CarName = "Xe Máy Điện Takashi Crown - Đen",
-                Price = 14500000,
-                Quantity = 2, // Thử với số lượng 2
-                ImageUrl = "/images/car_mock_2.jpg"
-            }
-        };
-
-            // Lưu giỏ hàng giả vào Session với key "Cart"
-            HttpContext.Session.Set("Cart", mockCartItems);
-
-            // Chuyển hướng người dùng đến trang hiển thị giỏ hàng chính thức
-            return RedirectToAction("Index");
-        }
-
         public IActionResult Index()
         {
             // 1. Get existed cart
@@ -111,11 +82,11 @@ namespace CarManagementSystem.WebMVC.Controllers
             HttpContext.Session.Set("Cart", cart);
 
             // Redirect to Index Action in Cart Controller
-            return RedirectToAction("Index", "Cart");
+            return RedirectToAction("Details", "ElectricVehicles", new { id = car.Id });
         }
 
         [HttpPost]
-        public IActionResult UpdateCart(int carId, int quantity)
+        public IActionResult UpdateCart(int carId, int quantity, string control)
         {
             // 1. Get existed cart
             var cart = HttpContext.Session.Get<List<CartItem>>("Cart") ?? [];
@@ -137,7 +108,14 @@ namespace CarManagementSystem.WebMVC.Controllers
 
             HttpContext.Session.Set("Cart", cart);
 
-            return RedirectToAction("Index", "Cart");
+            if (control.Equals("Cart"))
+            {
+                return RedirectToAction("Index", "Cart");
+            }
+            else
+            {
+                return RedirectToAction("Details", "ElectricVehicles", new { id = carId });
+            }
         }
 
         [HttpGet]

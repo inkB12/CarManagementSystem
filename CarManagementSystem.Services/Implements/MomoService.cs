@@ -22,8 +22,8 @@ namespace CarManagementSystem.Services.Implements
         public async Task<MomoResponseDTO> CreatePaymentAsync(Order order)
         {
             string requestIds = DateTime.UtcNow.Ticks.ToString();
-            decimal amounts = 100000;
-            string orderIds = Guid.NewGuid().ToString();
+            decimal amounts = Convert.ToInt64(order.Total);
+            string orderIds = Guid.NewGuid().ToString().Substring(1) + order.Id;
 
             var rawData =
                 $"accessKey={_options.Value.AccessKey}" +

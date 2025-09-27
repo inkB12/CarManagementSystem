@@ -1,11 +1,9 @@
-﻿using System.Threading.Tasks;
-using CarManagementSystem.BusinessObjects;
+﻿using CarManagementSystem.BusinessObjects;
 using CarManagementSystem.Services.Dtos.Momo;
 using CarManagementSystem.Services.Interfaces;
 using CarManagementSystem.WebMVC.Extensions;
 using CarManagementSystem.WebMVC.Models;
 using CarManagementSystem.WebMVC.Models.Cart;
-using CarManagementSystem.WebMVC.Models.Checkout;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
@@ -77,8 +75,8 @@ namespace CarManagementSystem.WebMVC.Controllers
                 }
 
                 // Get User Id
-                var userId = (int)HttpContext.Session.GetInt32("UserId");
-                if (userId == 0)
+                int? userId = HttpContext.Session.GetInt32("UserId");
+                if (userId == null || userId == 0)
                 {
                     //Back to Login
                     return RedirectToAction("Login", "Auth");
@@ -94,18 +92,31 @@ namespace CarManagementSystem.WebMVC.Controllers
                     ZipCode = model.AddressInfo.ZipCode,
                     Note = model.AddressInfo.Note,
                     PromotionId = model.PromotionId,
-                    UserId = userId
+                    UserId = (int)userId
                 });
 
                 if (ok)
                 {
-                    // Create Payment Url
-                    var momoResponse = await _momoService.CreatePaymentAsync(data);
+                    HttpContext.Session.Set<List<CartItem>>("Cart", []);
 
-                    if (momoResponse != null && !momoResponse.PayUrl.IsNullOrEmpty())
+                    switch (model.PaymentMethod)
                     {
-                        return Redirect(momoResponse.PayUrl);
+                        case "Momo":
+                            // Create Payment Url
+                            var momoResponse = await _momoService.CreatePaymentAsync(data);
+
+                            if (momoResponse != null && !momoResponse.PayUrl.IsNullOrEmpty())
+                            {
+                                return Redirect(momoResponse.PayUrl);
+                            }
+                            break;
+
+                        default:
+
+                            break;
                     }
+
+
                 }
                 return View(model);
             }
@@ -142,10 +153,11 @@ namespace CarManagementSystem.WebMVC.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("momo-redirect")]
-        public async Task<IActionResult> MomoRedirect(int resultCode, int orderId)
+        public async Task<IActionResult> MomoRedirect(int resultCode, string orderId)
         {
             string paymentMessage;
             string status = "CANCELLED";
+            string subStringId = orderId[^1..];
 
             if (resultCode == 0)
             {
@@ -159,14 +171,21 @@ namespace CarManagementSystem.WebMVC.Controllers
                 paymentMessage = "Đơn hàng thanh toán thất bại";
             }
 
-            await _orderService.UpdateAsync(new Order()
+            if (int.TryParse(subStringId, out int id))
             {
-                Id = orderId,
-                Status = status
-            });
+                await _orderService.UpdateAsync(new Order()
+                {
+                    Id = id,
+                    Status = status
+                });
+            }
+            else
+            {
+                paymentMessage = "Đơn hàng thanh toán thất bại do mã đơn lỗi";
+            }
 
             ViewBag.PaymentMessage = paymentMessage;
-            ViewBag.OrderId = orderId;
+            ViewBag.OrderId = id;
             ViewBag.ResultCode = resultCode;
 
             return View();

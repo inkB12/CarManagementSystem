@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using CarManagementSystem.Services.Services;
+using CarManagementSystem.WebMVC.Models.Cart;
+using CarManagementSystem.WebMVC.Extensions;
 
 namespace CarManagementSystem.WebMVC.Controllers
 {
@@ -102,6 +104,7 @@ namespace CarManagementSystem.WebMVC.Controllers
 
             var vm = new ElectricVehicleDetailVM()
             {
+                Id = id,
                 ImageUrl = string.IsNullOrWhiteSpace(v.ImageUrl) ? null : v.ImageUrl,
                 Color = v.Color,
                 Price = v.Price,
@@ -112,6 +115,18 @@ namespace CarManagementSystem.WebMVC.Controllers
                             .Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries)
                             .Select(s => s.Trim('•', '-', ' ')).Where(s => !string.IsNullOrWhiteSpace(s)).ToList()
             };
+
+            var cart = HttpContext.Session.Get<List<CartItem>>("Cart") ?? [];
+            if (cart.Count != 0)
+            {
+                var existedCar = cart.FirstOrDefault(c => c.CarId == id);
+                ViewBag.IsInCart = existedCar != null;
+                ViewBag.Quantity = existedCar != null ? existedCar.Quantity : 0;
+            }
+            else
+            {
+                ViewBag.IsInCart = false;
+            }
 
             return View(vm);
         }

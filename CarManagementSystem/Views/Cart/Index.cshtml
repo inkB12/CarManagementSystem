@@ -41,6 +41,7 @@ else
 						<td class="text-center">
 							<form asp-action="UpdateCart" asp-controller="Cart" method="post" class="d-inline-flex align-items-center">
 								<input type="hidden" name="carId" value="@item.CarId" />
+								<input type="hidden" name="action" value="Cart" />
 
 								@* Decrease Quantity *@
 								<button type="submit" name="quantity" value="-1"
