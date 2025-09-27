@@ -1,0 +1,152 @@
+﻿@model CarManagementSystem.WebMVC.Models.MonthlyRevenueReportViewModel
+@using System.Globalization
+@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    var vi = CultureInfo.GetCultureInfo("vi-VN");
+}
+
+<div class="d-flex align-items-center justify-content-between mb-4">
+    <h2 class="mb-0">Báo cáo doanh thu tháng @Model.Month/@Model.Year</h2>
+
+    <form method="get" class="d-flex gap-2">
+        <select name="month" class="form-select">
+            @for (int i = 1; i <= 12; i++)
+            {
+                <option value="@i" selected="@(i == Model.Month ? "selected" : null)">@($"Tháng {i}")</option>
+            }
+        </select>
+        <select name="year" class="form-select">
+            @{
+                var nowY = DateTime.Now.Year;
+                for (int y = nowY - 3; y <= nowY + 1; y++)
+                {
+                    <option value="@y" selected="@(y == Model.Year ? "selected" : null)">@y</option>
+                }
+            }
+        </select>
+        <button class="btn btn-primary"><i class="bi bi-search me-1"></i>Lọc</button>
+    </form>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-6">
+        <div class="card p-4 shadow-sm">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <div class="text-muted">Tổng doanh thu</div>
+                    <div class="fs-3 fw-bold text-success">@Model.TotalRevenue.ToString("c0", vi)</div>
+                </div>
+                <i class="bi bi-cash-coin fs-1 text-success"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card p-4 shadow-sm">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <div class="text-muted">Tổng số đơn hàng</div>
+                    <div class="fs-3 fw-bold text-primary">@Model.TotalOrders</div>
+                </div>
+                <i class="bi bi-bag-check fs-1 text-primary"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mt-1">
+    <!-- Donut chart -->
+    <div class="col-lg-6">
+        <div class="card p-4 shadow-sm">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0">Doanh thu theo phương thức thanh toán</h5>
+                <span class="badge bg-light text-dark">Donut</span>
+            </div>
+            <canvas id="paymentChart" style="height:320px;"></canvas>
+        </div>
+    </div>
+
+    <!-- Bảng chi tiết -->
+    <div class="col-lg-6">
+        <div class="card p-4 shadow-sm">
+            <h5 class="mb-3">Chi tiết đơn hàng</h5>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Mã</th>
+                            <th>Khách hàng</th>
+                            <th>Ngày đặt</th>
+                            <th>Phương thức</th>
+                            <th class="text-end">Tổng</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var o in Model.Orders)
+                        {
+                            <tr>
+                                <td>@o.OrderId</td>
+                                <td>@o.CustomerName</td>
+                                <td>@o.Datetime.ToString("dd/MM/yyyy")</td>
+                                <td>@o.PaymentMethod</td>
+                                <td class="text-end">@o.Total.ToString("c0", vi)</td>
+                            </tr>
+                        }
+                        @if (!Model.Orders.Any())
+                        {
+                            <tr><td colspan="5" class="text-center text-muted">Không có dữ liệu</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        (() => {
+            const labels = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.RevenueByPaymentMethod.Keys));
+            const data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.RevenueByPaymentMethod.Values));
+
+            const ctx = document.getElementById('paymentChart').getContext('2d');
+
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels,
+                    datasets: [{
+                        data,
+                        // bảng màu hiện đại (không cần gradient để giữ performance)
+                        backgroundColor: [
+                            '#6366F1','#8B5CF6','#F59E0B','#10B981',
+                            '#06B6D4','#EC4899','#22C55E','#F97316'
+                        ],
+                        borderColor: '#fff',
+                        borderWidth: 2,
+                        hoverOffset: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    cutout: '60%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { boxWidth: 12, padding: 16 }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => {
+                                    const val = ctx.raw ?? 0;
+                                    // format VND
+                                    return `${ctx.label}: ${val.toLocaleString('vi-VN')} ₫`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        })();
+    </script>
+}
