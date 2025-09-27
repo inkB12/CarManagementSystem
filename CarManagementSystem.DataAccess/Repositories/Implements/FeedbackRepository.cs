@@ -21,7 +21,7 @@ namespace CarManagementSystem.DataAccess.Repositories.Services
 
         public async Task<List<Feedback>> GetAllAsync(Expression<Func<Feedback, bool>>? predicate = null)
         {
-            IQueryable<Feedback> q = _db.Feedbacks.AsNoTracking();
+            IQueryable<Feedback> q = _db.Feedbacks.Include(x => x.User).AsNoTracking();
             if (predicate != null) q = q.Where(predicate);
             return await q.OrderByDescending(x => x.Datetime).ToListAsync();
         }

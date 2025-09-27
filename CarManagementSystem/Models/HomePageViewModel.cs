@@ -2,6 +2,13 @@
 
 namespace CarManagementSystem.WebMVC.Models
 {
+    public class FeedbackCardVM
+    {
+        public string FeedbackType { get; set; } = "";
+        public string Content { get; set; } = "";
+        public string UserFullName { get; set; } = "";
+        public DateTime Datetime { get; set; }
+    }
     public class NewsItemVM
     {
         public string Title { get; set; } = "";
@@ -22,5 +29,7 @@ namespace CarManagementSystem.WebMVC.Models
         public string? IntroText { get; set; }
         public List<(string Img, string? Label, string? Link)> CategoryCards { get; set; } = new(); // tối đa 6
         public List<NewsItemVM> News { get; set; } = new();
+        // NEW: feedback mới nhất cho banner
+        public List<FeedbackCardVM> RecentFeedbacks { get; set; } = new();
     }
 }
