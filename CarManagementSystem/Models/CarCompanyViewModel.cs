@@ -16,6 +16,6 @@ namespace CarManagementSystem.WebMVC.Models
         public string? Description { get; set; }
 
         [Display(Name = "Hoạt động")]
-        public bool IsActive { get; set; } = true;
+        public bool IsActive { get; set; }
     }
 }

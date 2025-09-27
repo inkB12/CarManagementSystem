@@ -1,8 +1,16 @@
-﻿// WebMVC/Controllers/ElectricVehiclesController.cs
 using CarManagementSystem.Services.Interfaces;
 using CarManagementSystem.WebMVC.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using CarManagementSystem.BusinessObjects;
+using CarManagementSystem.Services.Interfaces;
+using CarManagementSystem.WebMVC.Models;
+using CloudinaryDotNet;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
+using CarManagementSystem.Services.Services;
 
 namespace CarManagementSystem.WebMVC.Controllers
 {
@@ -11,15 +19,18 @@ namespace CarManagementSystem.WebMVC.Controllers
         private readonly IElectricVehicleService _vehicleSvc;
         private readonly ICarCompanyService _companySvc;
         private readonly IVehicleCategoryService _categorySvc;
+        private readonly Cloudinary _cloudinary;   // ✅ thêm Cloudinary
 
         public ElectricVehiclesController(
-            IElectricVehicleService vehicleSvc,
-            ICarCompanyService companySvc,
-            IVehicleCategoryService categorySvc)
+            IElectricVehicleService service,
+            ICarCompanyService carCompanyService,
+            IVehicleCategoryService categoryService,
+            Cloudinary cloudinary) // ✅ inject từ DI
         {
-            _vehicleSvc = vehicleSvc;
-            _companySvc = companySvc;
-            _categorySvc = categorySvc;
+            _vehicleSvc = service;
+            _companySvc = carCompanyService;
+            _categorySvc = categoryService;
+            _cloudinary = cloudinary;
         }
 
         public async Task<IActionResult> Index(
@@ -89,14 +100,11 @@ namespace CarManagementSystem.WebMVC.Controllers
             var v = await _vehicleSvc.GetByIdAsync(id);
             if (v == null) return NotFound();
 
-            var vm = new ElectricVehicleDetailVM
+            var vm = new ElectricVehicleDetailVM()
             {
-                Id = v.Id,
-                Model = v.Model,
-                Version = v.Version,
-                Price = v.Price,
                 ImageUrl = string.IsNullOrWhiteSpace(v.ImageUrl) ? null : v.ImageUrl,
                 Color = v.Color,
+                Price = v.Price,
                 CompanyName = v.CarCompany?.CatalogName ?? v.CarCompany?.ToString() ?? "N/A",
                 CategoryName = v.VehicleCategory?.CategoryName ?? "N/A",
                 Specification = v.Specification,
@@ -106,6 +114,187 @@ namespace CarManagementSystem.WebMVC.Controllers
             };
 
             return View(vm);
-            }
         }
+
+
+        // GET: ElectricVehicles
+        public async Task<IActionResult> IndexAdmin()
+        {
+            var vehicles = await _vehicleSvc.GetAllAsync(false);
+
+            var vm = vehicles.Select(v => new VehicleViewModel
+            {
+                Id = v.Id,
+                Model = v.Model,
+                Version = v.Version,
+                Price = v.Price,
+                Specification = v.Specification,
+                Color = v.Color,
+                ImageUrl = v.ImageUrl,
+                CarCompanyId = v.CarCompanyId,
+                CarCompanyName = v.CarCompany?.CatalogName,
+                VehicleCategoryId = v.VehicleCategoryId,
+                VehicleCategoryName = v.VehicleCategory?.CategoryName,
+                IsActive = v.IsActive
+            }).ToList();
+
+            ViewData["Title"] = "Vehicles";
+            return View(vm);
+        }
+
+        // GET: ElectricVehicles/Create
+        public async Task<IActionResult> Create()
+        {
+            await LoadDropdowns();
+            return View();
+        }
+
+        // POST: ElectricVehicles/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(VehicleViewModel vm)
+        {
+            if (!ModelState.IsValid)
+            {
+                await LoadDropdowns();
+                return View(vm);
+            }
+
+            string? imageUrl = null;
+            if (vm.ImageFile != null && vm.ImageFile.Length > 0)
+            {
+                using var stream = vm.ImageFile.OpenReadStream();
+                var uploadParams = new ImageUploadParams
+                {
+                    File = new FileDescription(vm.ImageFile.FileName, stream),
+                    Folder = "electric_vehicles"
+                };
+                var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+                imageUrl = uploadResult.SecureUrl?.ToString();
+            }
+
+            var entity = new ElectricVehicle
+            {
+                Model = vm.Model,
+                Version = vm.Version,
+                Price = vm.Price,
+                Specification = vm.Specification,
+                Color = vm.Color,
+                ImageUrl = imageUrl,
+                CarCompanyId = vm.CarCompanyId,
+                VehicleCategoryId = vm.VehicleCategoryId
+                // ❌ không set IsActive, service sẽ tự set = true
+            };
+
+            var (ok, message, _) = await _vehicleSvc.CreateAsync(entity);
+            TempData[ok ? "SuccessMessage" : "ErrorMessage"] = message;
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        // GET: ElectricVehicles/Edit/5
+        public async Task<IActionResult> Edit(int id)
+        {
+            var entity = await _vehicleSvc.GetByIdAsync(id);
+            if (entity == null) return NotFound();
+
+            var vm = new VehicleViewModel
+            {
+                Id = entity.Id,
+                Model = entity.Model,
+                Version = entity.Version,
+                Price = entity.Price,
+                Specification = entity.Specification,
+                Color = entity.Color,
+                ImageUrl = entity.ImageUrl,
+                CarCompanyId = entity.CarCompanyId,
+                VehicleCategoryId = entity.VehicleCategoryId,
+                IsActive = entity.IsActive
+            };
+
+            await LoadDropdowns();
+            return View(vm);
+        }
+
+        // POST: ElectricVehicles/Edit
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(VehicleViewModel vm)
+        {
+            if (!ModelState.IsValid)
+            {
+                await LoadDropdowns();
+                return View(vm);
+            }
+
+            string? imageUrl = vm.ImageUrl;
+            if (vm.ImageFile != null && vm.ImageFile.Length > 0)
+            {
+                using var stream = vm.ImageFile.OpenReadStream();
+                var uploadParams = new ImageUploadParams
+                {
+                    File = new FileDescription(vm.ImageFile.FileName, stream),
+                    Folder = "electric_vehicles"
+                };
+                var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+                imageUrl = uploadResult.SecureUrl?.ToString();
+            }
+
+            var entity = new ElectricVehicle
+            {
+                Id = vm.Id,
+                Model = vm.Model,
+                Version = vm.Version,
+                Price = vm.Price,
+                Specification = vm.Specification,
+                Color = vm.Color,
+                ImageUrl = imageUrl,
+                CarCompanyId = vm.CarCompanyId,
+                VehicleCategoryId = vm.VehicleCategoryId
+                // ❌ không set IsActive
+            };
+
+            var (ok, message, _) = await _vehicleSvc.UpdateAsync(entity);
+            TempData[ok ? "SuccessMessage" : "ErrorMessage"] = message;
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        // GET: ElectricVehicles/Delete/5
+        public async Task<IActionResult> Delete(int id)
+        {
+            var entity = await _vehicleSvc.GetByIdAsync(id);
+            if (entity == null) return NotFound();
+
+            var vm = new VehicleViewModel
+            {
+                Id = entity.Id,
+                Model = entity.Model,
+                CarCompanyName = entity.CarCompany?.CatalogName,
+                VehicleCategoryName = entity.VehicleCategory?.CategoryName,
+                Price = entity.Price
+            };
+
+            return View(vm);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var (ok, message) = await _vehicleSvc.DeleteAsync(id);
+            TempData[ok ? "SuccessMessage" : "ErrorMessage"] = message;
+            return RedirectToAction(nameof(Index));
+        }
+
+        // chỉ load những CarCompany và VehicleCategory còn active
+        private async Task LoadDropdowns()
+        {
+            var companies = await _companySvc.GetAllAsync(true);
+            var categories = await _categorySvc.GetAllAsync(true);
+
+            ViewBag.CarCompanies = new SelectList(companies, "Id", "CatalogName");
+            ViewBag.Categories = new SelectList(categories, "Id", "CategoryName");
+        }
+    }
 }

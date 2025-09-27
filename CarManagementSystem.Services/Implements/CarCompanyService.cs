@@ -34,22 +34,36 @@ namespace CarManagementSystem.Services.Services
 
         public async Task<(bool ok, string message, CarCompany? data)> CreateAsync(CarCompany company)
         {
-            company.IsActive = true;
-            var saved = await _repo.CreateAsync(company);
-            return (true, "Created", saved);
+            try
+            {
+                company.IsActive = true; // luôn mặc định true
+                var saved = await _repo.CreateAsync(company);
+                return (true, "Thêm hãng xe thành công", saved);
+            }
+            catch (Exception ex)
+            {
+                return (false, $"Thêm hãng xe thất bại: {ex.Message}", null);
+            }
         }
 
         public async Task<(bool ok, string message, CarCompany? data)> UpdateAsync(CarCompany company)
         {
             var existed = await _repo.GetByIdAsync(company.Id);
-            if (existed == null) return (false, "Not found", null);
+            if (existed == null) return (false, "Không tìm thấy hãng xe", null);
 
-            existed.CatalogName = company.CatalogName?.Trim();
-            existed.Description = company.Description;
-            existed.IsActive = company.IsActive;
+            try
+            {
+                // ❌ Không cho cập nhật IsActive
+                existed.CatalogName = company.CatalogName?.Trim();
+                existed.Description = company.Description;
 
-            var updated = await _repo.UpdateAsync(existed);
-            return (true, "Updated", updated);
+                var updated = await _repo.UpdateAsync(existed);
+                return (true, "Cập nhật hãng xe thành công", updated);
+            }
+            catch (Exception ex)
+            {
+                return (false, $"Cập nhật hãng xe thất bại: {ex.Message}", null);
+            }
         }
 
         public async Task<(bool ok, string message)> DeleteAsync(int id)
@@ -58,15 +72,18 @@ namespace CarManagementSystem.Services.Services
             if (company == null)
                 return (false, "Không tìm thấy hãng xe");
 
-            // ✅ Kiểm tra có ElectricVehicle nào tham chiếu tới CarCompanyId này không
-            var vehicles = await _evRepo.GetAllAsync(ev => ev.CarCompanyId == id);
-            if (vehicles.Any())
+            try
             {
-                return (false, $"Không thể xóa hãng xe {company.CatalogName} vì vẫn còn xe thuộc hãng này");
-            }
+                // ❌ Không xóa thật, chỉ set IsActive = false
+                company.IsActive = false;
+                await _repo.UpdateAsync(company);
 
-            var ok = await _repo.DeleteAsync(id);
-            return ok ? (true, "Đã xóa thành công") : (false, "Xóa thất bại");
+                return (true, $"Đã ngưng hoạt động hãng xe {company.CatalogName}");
+            }
+            catch (Exception ex)
+            {
+                return (false, $"Xóa hãng xe thất bại: {ex.Message}");
+            }
         }
     }
 }
