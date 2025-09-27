@@ -28,6 +28,7 @@
                         <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Index">Trang chủ</a></li>
                         <li class="nav-item"><a class="nav-link" asp-controller="Promotions" asp-action="Index">Khuyến mãi</a></li>
                         <li class="nav-item"><a class="nav-link" asp-controller="ElectricVehicles" asp-action="Index">Xe điện</a></li>
+                        <vc:cart-count></vc:cart-count>
                         @if (Context.Session.GetInt32("UserId") == null)
                         {
                             <!-- Nếu chưa login -->
