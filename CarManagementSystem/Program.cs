@@ -55,6 +55,7 @@ builder.Services.AddScoped<IPromotionService, PromotionService>();
 builder.Services.AddScoped<IFeedbackService, FeedbackService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IMomoService, MomoService>();
+builder.Services.AddScoped<IReportService, ReportService>();
 
 
 // Add services to the container.
