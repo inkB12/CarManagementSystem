@@ -53,7 +53,7 @@ namespace CarManagementSystem.WebMVC.Controllers
                 "https://res.cloudinary.com/dratbz8bh/image/upload/v1758770393/mgvskl-1680828328667953668266_jbciku.jpg",
                 "https://res.cloudinary.com/dratbz8bh/image/upload/v1758770725/pngtree-visual-representation-of-an-electric-vehicle-being-charged-in-3d-picture-image_3759588_mszxqr.png"
             };
-            vm.IntroTitle = "Đại lý xe điện – thông minh & thân thiện môi trường";
+            vm.IntroTitle = "Đại lý xe điện – thông minh & thân thiện môi trường";  
             vm.IntroText = "Tư vấn chọn xe, hỗ trợ lái thử, bảo hành chính hãng và nhiều ưu đãi dành cho khách hàng mới.";
             vm.CategoryCards = new()
             {
@@ -69,7 +69,7 @@ namespace CarManagementSystem.WebMVC.Controllers
                 new NewsItemVM { Title="Ra mắt SUV EV mới 600km", Summary="Pin LFP, sạc nhanh 250kW.",
                                  ImageUrl="https://i.ytimg.com/vi/CsuuOHAHfE4/hq720.jpg", Url="/News/1", PublishedAt=DateTime.Today },
                 new NewsItemVM { Title="Ưu đãi tháng này", Summary="Giảm 10–20% phí đăng ký.", ImageUrl="https://bqn.1cdn.vn/2025/09/07/vinfast-motio.jpg", Url="/News/2"},
-                new NewsItemVM { Title="Trạm sạc Q.1", Summary="40 cổng sạc nhanh.", ImageUrl="https://cdn.tienphong.vn/images/a6bf...jpg", Url="/News/3"},
+                new NewsItemVM { Title="Trạm sạc Q.1", Summary="40 cổng sạc nhanh.", ImageUrl="https://cdn.tienphong.vn/images/814b5533c866dc3540018a126103e93589d7dd15db36187319cb37bf2a1c41cb1a19597ebcee0ea67d46501b9db8087ff55f4d4cf291e10c38303c5c973ba32b/1-1076-5012.jpg", Url="/News/3"},
                 new NewsItemVM { Title="Bảo dưỡng pin", Summary="Giữ dung lượng tối ưu.", ImageUrl="https://greencharge.vn/wp-content/uploads/2023/05/bao-tri-pin-xe-dien-1.jpg", Url="/News/4"},
             };
 
