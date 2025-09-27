@@ -5,49 +5,47 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CarManagementSystem.WebMVC.Controllers
 {
-    public class CarCompaniesController : Controller
+    public class VehicleCategoriesController : Controller
     {
-        private readonly ICarCompanyService _service;
+        private readonly IVehicleCategoryService _service;
 
-        public CarCompaniesController(ICarCompanyService service)
+        public VehicleCategoriesController(IVehicleCategoryService service)
         {
             _service = service;
         }
 
-        // GET: CarCompanies
+        // GET: VehicleCategories
         public async Task<IActionResult> Index()
         {
-            var companies = await _service.GetAllAsync(false);
-            var vm = companies.Select(c => new CarCompanyViewModel
+            var categories = await _service.GetAllAsync(false);
+            var vm = categories.Select(c => new VehicleCategoryViewModel
             {
                 Id = c.Id,
-                CatalogName = c.CatalogName,
-                Description = c.Description,
+                CategoryName = c.CategoryName,
                 IsActive = c.IsActive
             }).ToList();
 
-            ViewData["Title"] = "Car Companies";
+            ViewData["Title"] = "Vehicle Categories";
             return View(vm);
         }
 
-        // GET: CarCompanies/Create
+        // GET: VehicleCategories/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: CarCompanies/Create
+        // POST: VehicleCategories/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CarCompanyViewModel vm)
+        public async Task<IActionResult> Create(VehicleCategoryViewModel vm)
         {
             if (!ModelState.IsValid) return View(vm);
 
-            var entity = new CarCompany
+            var entity = new VehicleCategory
             {
-                CatalogName = vm.CatalogName,
-                Description = vm.Description
-                // ❌ KHÔNG set IsActive ở đây, service sẽ tự set = true
+                CategoryName = vm.CategoryName
+                // ❌ không set IsActive, service sẽ auto = true
             };
 
             var (ok, message, _) = await _service.CreateAsync(entity);
@@ -58,36 +56,35 @@ namespace CarManagementSystem.WebMVC.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: CarCompanies/Edit/5
+
+
+        // GET: VehicleCategories/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
             var entity = await _service.GetByIdAsync(id);
             if (entity == null) return NotFound();
 
-            var vm = new CarCompanyViewModel
+            var vm = new VehicleCategoryViewModel
             {
                 Id = entity.Id,
-                CatalogName = entity.CatalogName,
-                Description = entity.Description,
+                CategoryName = entity.CategoryName,
                 IsActive = entity.IsActive
             };
 
             return View(vm);
         }
 
-        // POST: CarCompanies/Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(CarCompanyViewModel vm)
+        public async Task<IActionResult> Edit(VehicleCategoryViewModel vm)
         {
             if (!ModelState.IsValid) return View(vm);
 
-            var entity = new CarCompany
+            var entity = new VehicleCategory
             {
                 Id = vm.Id,
-                CatalogName = vm.CatalogName,
-                Description = vm.Description
-                // ❌ KHÔNG set IsActive, service sẽ bỏ qua
+                CategoryName = vm.CategoryName
+                // ❌ không set IsActive
             };
 
             var (ok, message, _) = await _service.UpdateAsync(entity);
@@ -98,24 +95,24 @@ namespace CarManagementSystem.WebMVC.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: CarCompanies/Delete/5
+
+        // GET: VehicleCategories/Delete/5
         public async Task<IActionResult> Delete(int id)
         {
             var entity = await _service.GetByIdAsync(id);
             if (entity == null) return NotFound();
 
-            var vm = new CarCompanyViewModel
+            var vm = new VehicleCategoryViewModel
             {
                 Id = entity.Id,
-                CatalogName = entity.CatalogName,
-                Description = entity.Description,
+                CategoryName = entity.CategoryName,
                 IsActive = entity.IsActive
             };
 
             return View(vm);
         }
 
-        // POST: CarCompanies/DeleteConfirmed
+        // POST: VehicleCategories/DeleteConfirmed
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

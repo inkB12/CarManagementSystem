@@ -4,7 +4,7 @@
     ViewData["Title"] = "Car Companies";
 }
 
-<h2>Car Companies</h2>
+<h2>Quản lý hãng xe</h2>
 
 
 @if (TempData["ErrorMessage"] != null)
@@ -17,7 +17,7 @@
 }
 
 <p>
-    <a class="btn btn-primary" asp-action="Create">+ Add New</a>
+    <a class="btn btn-primary" asp-action="Create">+ Thêm mới</a>
 </p>
 
 <table class="table table-bordered table-striped">
@@ -35,10 +35,10 @@
             <tr>
                 <td>@item.CatalogName</td>
                 <td>@item.Description</td>
-                <td>@(item.IsActive ? "Yes" : "No")</td>
+                <td>@(item.IsActive ? "Hoạt động ✅ " : "Ngưng hoạt động ✘")</td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Edit</a>
-                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Delete</a>
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Sửa</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Xóa</a>
                 </td>
             </tr>
         }
