@@ -1,5 +1,6 @@
 ﻿using CarManagementSystem.BusinessObjects;
 using CarManagementSystem.Services.Interfaces;
+using CarManagementSystem.Services.Services;
 using CarManagementSystem.WebMVC.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -63,17 +64,17 @@ namespace CarManagementSystem.WebMVC.Controllers
             {
                 if (vm.Password.Length >= 6)
                 {
-                    user.Password = vm.Password;
+                    user.Password = UserService.HashSHA256(vm.Password);
                 }
                 else
                 {
                     ModelState.AddModelError("Password", "Wrong format password (min 6 characters).");
                     return View(vm);
                 }
-            }    
-            
+            }
 
-                var response = await _users.UpdateAsync(user);
+
+            var response = await _users.UpdateAsync(user);
             if (!response.ok)
             {
                 ModelState.AddModelError(string.Empty, response.message);

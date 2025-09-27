@@ -6,9 +6,28 @@ using CarManagementSystem.Services.Dtos.Momo;
 using CarManagementSystem.Services.Implements;
 using CarManagementSystem.Services.Interfaces;
 using CarManagementSystem.Services.Services;
+using CarManagementSystem.WebMVC.Configurations;
 using Microsoft.EntityFrameworkCore;
+using CloudinaryDotNet;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Kết nối Couldinary
+
+builder.Services.Configure<CloudinarySettings>(
+    builder.Configuration.GetSection("Cloudinary"));
+
+
+var cloudinarySettings = builder.Configuration
+                                .GetSection("Cloudinary")
+                                .Get<CloudinarySettings>();
+var account = new Account(
+    cloudinarySettings.CloudName,
+    cloudinarySettings.ApiKey,
+    cloudinarySettings.ApiSecret);
+
+var cloudinary = new Cloudinary(account);
+builder.Services.AddSingleton(cloudinary);
 
 // Kết nối Momo 
 builder.Services.Configure<MomoOptionDTO>(builder.Configuration.GetSection("MomoApi"));
@@ -36,6 +55,7 @@ builder.Services.AddScoped<IPromotionService, PromotionService>();
 builder.Services.AddScoped<IFeedbackService, FeedbackService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IMomoService, MomoService>();
+builder.Services.AddScoped<IReportService, ReportService>();
 
 
 // Add services to the container.

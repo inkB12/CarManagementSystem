@@ -1,8 +1,9 @@
 ﻿
 
-using System.Linq.Expressions;
 using CarManagementSystem.BusinessObjects;
 using CarManagementSystem.DataAccess.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace CarManagementSystem.DataAccess.Repositories.Implements
 {
@@ -35,6 +36,18 @@ namespace CarManagementSystem.DataAccess.Repositories.Implements
         public Task<Order> GetByIdAsync(int id)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<List<Order>> GetOrdersInRangeByStatusAsync(DateTime start, DateTime end, string status)
+        {
+            return await _context.Orders
+        .AsNoTracking()
+        .Include(o => o.User)
+        .Where(o => o.Datetime >= start
+                 && o.Datetime < end
+                 && o.Status == status
+                 && o.User.Role == "Customer") // ✅ chỉ lấy đơn của Customer
+        .ToListAsync();
         }
 
         public Task<int> SaveChangeAsync()
