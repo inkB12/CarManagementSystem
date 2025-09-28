@@ -8,11 +8,6 @@
     <a asp-action="Create" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Tạo mới</a>
 </div>
 
-@if (TempData["msg"] != null)
-{
-    <div class="alert alert-success">@TempData["msg"]</div>
-}
-
 <div class="card p-3">
     <div class="table-responsive">
         <table class="table align-middle">
@@ -48,7 +43,7 @@
                             }
                         </td>
                         <td>
-                            <a asp-action="Edit" asp-route-id="@u.Id" class="btn btn-sm btn-outline-primary me-1">
+                            <a asp-action="EditAdmin" asp-route-id="@u.Id" class="btn btn-sm btn-outline-primary me-1">
                                 <i class="bi bi-pencil"></i>
                             </a>
                             <a asp-action="Delete" asp-route-id="@u.Id" class="btn btn-sm btn-outline-danger">

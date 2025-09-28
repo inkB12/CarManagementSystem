@@ -114,7 +114,7 @@ namespace CarManagementSystem.WebMVC.Controllers
                     return View(vm);
                 }
 
-                user.Password = vm.Password;
+                user.Password = UserService.HashSHA256(vm.Password);
             }
 
             var res = await _users.UpdateAsync(user);
