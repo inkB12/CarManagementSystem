@@ -1,6 +1,7 @@
 ﻿@model CarManagementSystem.WebMVC.Models.EditOrderViewModel
 
 @{
+	Layout = ViewBag.Layout;
 	ViewData["Title"] = "EditOrder";
 }
 
@@ -8,11 +9,28 @@
 	<div class="row justify-content-center">
 		<div class="col-md-8">
 			<h2 class="mb-4 text-primary"><i class="fas fa-edit me-2"></i> Chỉnh sửa đơn hàng #@Model.Id</h2>
-			<p class="text-muted">Bạn chỉ có thể chỉnh sửa Địa chỉ, Mã bưu điện và Ghi chú.</p>
 			<hr />
 
 			<form asp-action="EditOrder" method="post">
-				<input type="hidden" asp-for="Id" /> @* Dùng để gửi ID đơn hàng đi *@
+				@* Dùng để gửi ID đơn hàng đi *@
+				<input type="hidden" asp-for="Id" />
+
+				@if (!Context.Session.GetString("UserRole").Equals("Customer"))
+				{
+					@* Trạng thái *@
+					<div class="mb-3">
+						<label asp-for="Status" class="form-label">Trạng thái</label>
+						@* <textarea asp-for="Status" class="form-control" rows="3"></textarea> *@
+						<select asp-for="Status" class="form-control">
+							<option value="PENDING">Đang Xử Lý</option>
+							<option value="SUCCESS">Hoàn Thành</option>
+							<option value="CANCELLED">Đã Hủy</option>
+						</select>
+						<span asp-validation-for="Status" class="text-danger"></span>
+					</div>
+				}
+
+
 
 				@* Địa chỉ *@
 				<div class="mb-3">

@@ -43,7 +43,11 @@ namespace CarManagementSystem.DataAccess.Repositories.Implements
         {
             IQueryable<Order> query = _context.Orders.AsNoTracking();
             if (predicate != null) query = query.Where(predicate);
-            return await query.OrderBy(x => x.Id).ToListAsync();
+            return await query
+                .Include(x => x.OrderDetails).ThenInclude(od => od.ElectricVehicle)
+                .Include(x => x.Promotion)
+                .Include(x => x.User)
+                .OrderBy(x => x.Id).ToListAsync();
         }
 
         public async Task<Order> GetByIdAsync(int id) => await _context.Orders.FirstOrDefaultAsync(o => o.Id == id);

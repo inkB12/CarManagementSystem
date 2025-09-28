@@ -36,7 +36,7 @@ namespace CarManagementSystem.WebMVC.Controllers
             CheckoutViewModel model = new()
             {
                 CartItems = cart,
-                TotalPrice = cart.Sum(c => c.Quantity * c.Price)
+                TotalPrice = cart.Sum(c => c.Quantity * c.Price),
             };
 
             // 2. Pass to View

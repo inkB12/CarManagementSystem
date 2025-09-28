@@ -13,13 +13,21 @@ namespace CarManagementSystem.WebMVC.Controllers
             _orderService = orderService;
         }
 
-        public async Task<IActionResult> UserOrder(int id)
+        public async Task<IActionResult> UserOrder()
         {
+            // Kiểm tra đăng nhập
+            int? userId = HttpContext.Session.GetInt32("UserId");
+
+            if (userId == null || userId == 0)
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
             List<OrderViewModel> orderViewModels = [];
 
-            if (id != null && id != 0)
+            if (userId != null && userId != 0)
             {
-                var orders = await _orderService.GetOrderByUserIdAsync((int)id);
+                var orders = await _orderService.GetOrderByUserIdAsync((int)userId);
                 foreach (var order in orders)
                 {
                     orderViewModels.Add(new OrderViewModel()
@@ -42,8 +50,7 @@ namespace CarManagementSystem.WebMVC.Controllers
             return View(orderViewModels);
         }
 
-        [HttpGet]
-        public async Task<IActionResult> EditOrder(int orderId)
+        public async Task<IActionResult> AllOrders()
         {
             // Kiểm tra đăng nhập
             int? userId = HttpContext.Session.GetInt32("UserId");
@@ -53,12 +60,50 @@ namespace CarManagementSystem.WebMVC.Controllers
                 return RedirectToAction("Login", "Auth");
             }
 
+            List<OrderViewModel> orderViewModels = [];
+
+            var orders = await _orderService.GetAllAsync();
+            foreach (var order in orders)
+            {
+                orderViewModels.Add(new OrderViewModel()
+                {
+                    Id = order.Id,
+                    Datetime = order.Datetime,
+                    Total = order.Total,
+                    PaymentMethod = order.PaymentMethod,
+                    Status = order.Status,
+                    Address = order.Address,
+                    ZipCode = order.ZipCode,
+                    Note = order.Note,
+                    Promotion = order.Promotion,
+                    OrderDetails = [.. order.OrderDetails],
+                    User = order.User
+                });
+            }
+
+            return View(orderViewModels);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditOrder(int orderId)
+        {
+            // Kiểm tra đăng nhập
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            string? userRole = HttpContext.Session.GetString("UserRole") ?? "Customer";
+
+            if (userId == null || userId == 0)
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
             var order = await _orderService.GetOrderByIdAsync(orderId);
 
-            if (order == null || order.UserId != userId)
+            if (order == null || (order.UserId != userId && userRole.Equals("Customer")))
             {
                 return NotFound();
             }
+
+            ViewBag.Layout = GetLayout(userRole);
 
             return View(new EditOrderViewModel()
             {
@@ -66,6 +111,7 @@ namespace CarManagementSystem.WebMVC.Controllers
                 Address = order.Address,
                 ZipCode = order.ZipCode,
                 Note = order.Note,
+                Status = order.Status,
             });
         }
 
@@ -77,24 +123,17 @@ namespace CarManagementSystem.WebMVC.Controllers
                 return View(editModel);
             }
 
-            // Kiểm tra đăng nhập
-            int? userId = HttpContext.Session.GetInt32("UserId");
-
-            if (userId == null || userId == 0)
-            {
-                return RedirectToAction("Login", "Auth");
-            }
-
             var existingOrder = await _orderService.GetOrderByIdAsync(editModel.Id);
             existingOrder.Address = editModel.Address;
             existingOrder.ZipCode = editModel.ZipCode;
             existingOrder.Note = editModel.Note;
+            existingOrder.Status = editModel.Status;
 
             var (ok, message, _) = await _orderService.UpdateAsync(existingOrder);
 
             if (ok)
             {
-                return RedirectToAction("UserOrder", "Order", new { id = userId });
+                return RedirectToAction("UserOrder", "Order");
             }
 
             ModelState.AddModelError(string.Empty, $"Cập nhật thất bại: {message}");
@@ -132,15 +171,18 @@ namespace CarManagementSystem.WebMVC.Controllers
             if (ok) TempData["SuccessMessage"] = message;
             else TempData["ErrorMessage"] = message;
 
-            // Kiểm tra đăng nhập
-            int? userId = HttpContext.Session.GetInt32("UserId");
+            return RedirectToAction("UserOrder", "Order");
+        }
 
-            if (userId == null || userId == 0)
+        private string GetLayout(string userRole)
+        {
+            string layout = userRole switch
             {
-                return RedirectToAction("Login", "Auth");
-            }
-
-            return RedirectToAction("UserOrder", "Order", new { id = userId });
+                "Customer" => "~/Views/Shared/_Layout.cshtml",
+                "Admin" => "~/Views/Shared/_LayoutAdmin.cshtml",
+                _ => "~/Views/Shared/_LayoutStaff.cshtml",
+            };
+            return layout;
         }
     }
 }
