@@ -101,7 +101,7 @@ namespace CarManagementSystem.WebMVC.Controllers
             return View(existingOrder);
         }
 
-        // GET: Orders/Delete/5
+        // GET: Order/Delete/5
         public async Task<IActionResult> Delete(int id)
         {
             var entity = await _orderService.GetOrderByIdAsync(id);
@@ -109,7 +109,6 @@ namespace CarManagementSystem.WebMVC.Controllers
 
             var vm = new OrderViewModel
             {
-
                 Id = entity.Id,
                 Datetime = entity.Datetime,
                 Total = entity.Total,
@@ -123,7 +122,7 @@ namespace CarManagementSystem.WebMVC.Controllers
             return View(vm);
         }
 
-        // POST: Orders/DeleteConfirmed
+        // POST: Order/DeleteConfirmed
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -133,7 +132,15 @@ namespace CarManagementSystem.WebMVC.Controllers
             if (ok) TempData["SuccessMessage"] = message;
             else TempData["ErrorMessage"] = message;
 
-            return RedirectToAction(nameof(Index));
+            // Kiểm tra đăng nhập
+            int? userId = HttpContext.Session.GetInt32("UserId");
+
+            if (userId == null || userId == 0)
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
+            return RedirectToAction("UserOrder", "Order", new { id = userId });
         }
     }
 }

@@ -157,7 +157,7 @@ namespace CarManagementSystem.WebMVC.Controllers
         {
             string paymentMessage;
             string status = "CANCELLED";
-            string subStringId = orderId[^1..];
+            string subStringId = orderId[35..];
 
             if (resultCode == 0)
             {
