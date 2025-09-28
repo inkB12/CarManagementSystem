@@ -1,0 +1,18 @@
+﻿@model CarManagementSystem.WebMVC.Models.OrderViewModel
+@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    ViewData["Title"] = "DeleteOrder";
+}
+
+<h2>Hủy Đơn Hàng</h2>
+
+<div class="alert alert-danger">
+    Bạn có chắc chắn muốn hủy đơn hàng <strong>@Model.Id</strong>?
+</div>
+
+<form asp-action="Delete" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Đồng ý, Xóa</button>
+    <a asp-action="Index" class="btn btn-secondary">Hủy</a>
+</form>

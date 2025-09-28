@@ -112,8 +112,8 @@ namespace CarManagementSystem.WebMVC.Controllers
                             break;
 
                         default:
-
-                            break;
+                            // Redirect to order history
+                            return RedirectToAction("UserOrder", "Order", new { id = userId });
                     }
 
 
