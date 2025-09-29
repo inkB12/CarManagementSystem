@@ -1,0 +1,56 @@
+﻿@model IEnumerable<CarManagementSystem.WebMVC.Models.AdminFeedbackViewModel>
+@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    ViewData["Title"] = "Feedback";
+    int? userId = (int?)ViewBag.UserId;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="mb-0">Feedback của người dùng</h3>
+
+    <form method="get" class="d-flex align-items-center gap-2 flex-wrap">
+        <input type="text" class="form-control" style="max-width:260px"
+               name="q" value="@((string)ViewBag.Query ?? string.Empty)"
+               placeholder="Tìm tên hoặc email">
+        <button class="btn btn-outline-secondary" type="submit">Lọc</button>
+        <a asp-action="IndexAdmin" class="btn btn-link p-0 ms-2">Xóa lọc</a>
+    </form>
+</div>
+
+
+<div class="card p-3">
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>ID Feedback</th>
+                    <th>Tên</th>
+                    <th>Email</th>
+                    <th>Loại</th>
+                    <th>Nội dung</th>
+                    <th>Thời gian</th>
+                    <th style="width:120px;"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var f in Model)
+                {
+                    <tr>
+                        <td>@f.Id</td>
+                        <td>@(string.IsNullOrWhiteSpace(f.UserFullName) ? $"User #{f.UserId}" : f.UserFullName)</td>
+                        <td class="text-break">@f.UserEmail</td>
+                        <td>@f.FeedbackType</td>
+                        <td class="text-break" style="max-width:480px;">@f.Content</td>
+                        <td>@f.Datetime.ToString("dd-MM-yyyy  HH:mm")</td>
+                        <td>
+                            <a asp-action="Delete" asp-route-id="@f.Id" class="btn btn-sm btn-outline-danger" title="Xóa vĩnh viễn">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
