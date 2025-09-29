@@ -1,6 +1,6 @@
 ﻿@model IEnumerable<CarManagementSystem.WebMVC.Models.AdminFeedbackViewModel>
 @{
-    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    Layout = ViewBag.Layout;
     ViewData["Title"] = "Feedback";
     int? userId = (int?)ViewBag.UserId;
 }

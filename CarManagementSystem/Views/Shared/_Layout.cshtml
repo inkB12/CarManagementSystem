@@ -31,6 +31,7 @@
                         </li>
 
                         <li class="nav-item"><a class="nav-link" asp-controller="ElectricVehicles" asp-action="Index">Xe điện</a></li>
+                        <vc:cart-count></vc:cart-count>
                         @if (Context.Session.GetInt32("UserId") == null)
                         {
                             <!-- Nếu chưa login -->
@@ -47,6 +48,12 @@
                                    asp-route-id="@Context.Session.GetInt32("UserId")">
                                     <span class="text-dark">User:</span>
                                     <span class="text-danger">@Context.Session.GetString("UserFullName")</span>
+                                </a>
+                                <a class="btn btn-light border ms-2"
+                                   asp-controller="Order"
+                                   asp-action="UserOrder"
+                                   asp-route-id="@Context.Session.GetInt32("UserId")">
+                                    <span class="text-dark">Đơn hàng</span>
                                 </a>
                             </li>
 

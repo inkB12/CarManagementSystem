@@ -34,14 +34,13 @@ namespace CarManagementSystem.WebMVC.Controllers
             HttpContext.Session.SetString("UserRole", response.data.Role);
             HttpContext.Session.SetString("UserFullName", response.data.FullName);
 
-            if(response.data.Role == "Admin")
-            {
-                TempData["msg"] = "Login success";
-                return RedirectToAction("Index","Admin");
-            }    
-
             TempData["msg"] = "Login success";
-            return RedirectToAction("Index","Home");
+            return response.data.Role switch
+            {
+                "Admin" => RedirectToAction("Index", "Admin"),
+                "Staff" => RedirectToAction("Index", "Staff"),
+                _ => RedirectToAction("Index", "Home"),
+            };
         }
 
         [HttpGet]

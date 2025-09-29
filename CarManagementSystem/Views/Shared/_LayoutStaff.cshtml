@@ -1,13 +1,8 @@
-﻿@{
-    var ctrl = ViewContext.RouteData.Values["controller"]?.ToString();
-    var act = ViewContext.RouteData.Values["action"]?.ToString();
-}
-
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="utf-8" />
-    <title>@ViewData["Title"] - Admin Dashboard</title>
+    <title>@ViewData["Title"] - Staff Dashboard</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <!-- Google Font -->
@@ -119,17 +114,11 @@
         <!-- Sidebar -->
         <div id="sidebar-wrapper">
             <div class="sidebar-heading">
-                <i class="bi bi-lightning-charge-fill me-2"></i>Trang quản trị
+                <i class="bi bi-lightning-charge-fill me-2"></i>Trang quản lý
             </div>
             <div class="list-group list-group-flush">
-                <a asp-controller="Admin" asp-action="Index" class="list-group-item active"><i class="bi bi-house-door-fill me-2"></i>Dashboard</a>
-                <a asp-controller="User" asp-action="Index" class="list-group-item"><i class="bi bi-people-fill me-2"></i>Người dùng</a>
-                <a asp-controller="CarCompanies" asp-action="Index" class="list-group-item"><i class="bi bi-building me-2"></i>Hãng xe</a>
-                <a asp-controller="VehicleCategories" asp-action="Index" class="list-group-item"><i class="bi bi-building me-2"></i>Loại xe</a>
-                <a asp-controller="ElectricVehicles" asp-action="IndexAdmin" class="list-group-item"><i class="bi bi-truck-front me-2"></i>Xe điện</a>
                 <a asp-controller="Order" asp-action="AllOrders" class="list-group-item"><i class="bi bi-cart-check me-2"></i>Đơn hàng</a>
                 <a asp-controller="Promotions" asp-action="Index" class="list-group-item"><i class="bi bi-percent me-2"></i>Khuyến mãi</a>
-                <a asp-controller="Reports" asp-action="Index" class="list-group-item"><i class="bi bi-bar-chart-line me-2"></i>Báo cáo</a>
                 <a asp-controller="Feedback" asp-action="IndexAdmin" class="list-group-item"><i class="bi bi-chat-dots me-2"></i>Feedback</a>
             </div>
         </div>
@@ -144,9 +133,11 @@
                     <div class="ms-auto dropdown">
                         <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
                             <img src="https://i.pravatar.cc/40?img=8" alt="" width="32" height="32" class="rounded-circle me-2">
-                            <strong>Admin</strong>
+                            <strong>Staff</strong>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end mt-2 shadow-sm" aria-labelledby="dropdownUser">
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i> Cài đặt</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i> Hồ sơ</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" asp-controller="Auth" asp-action="Logout"><i class="bi bi-box-arrow-right me-2"></i> Đăng xuất</a></li>
                         </ul>
@@ -159,15 +150,11 @@
             <div class="container-fluid pt-4">
                 @RenderBody()
             </div>
-            </div>
         </div>
+    </div>
     </div>
 
     <!-- Scripts -->
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-
-    @await RenderSectionAsync("Scripts", required: false)
-
-
 </body>
 </html>

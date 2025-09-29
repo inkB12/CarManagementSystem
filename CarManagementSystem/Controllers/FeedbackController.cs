@@ -65,6 +65,7 @@ namespace CarManagementSystem.WebMVC.Controllers
         public async Task<IActionResult> IndexAdmin(string? q = null)
         {
             if (!IsStaffOrAdmin()) return RedirectToAction("Index", "Home");
+            var role = HttpContext.Session.GetString("UserRole") ?? "Admin";
 
             // Lấy tất cả feedback 
             var all = await _feedbackService.GetAllAsync(null);
@@ -108,6 +109,7 @@ namespace CarManagementSystem.WebMVC.Controllers
                 .ToList();
 
             ViewBag.Query = q;
+            ViewBag.Layout = GetLayout(role);
             return View(vms);
         }
          
@@ -122,6 +124,7 @@ namespace CarManagementSystem.WebMVC.Controllers
             // Lấy user info
             var users = await _userService.GetAllAsync(onlyActive: false);
             var info = users.FirstOrDefault(u => u.Id == f.UserId);
+            var role = HttpContext.Session.GetString("UserRole") ?? "Admin";
 
             var vm = new AdminFeedbackViewModel
             {
@@ -133,6 +136,9 @@ namespace CarManagementSystem.WebMVC.Controllers
                 UserFullName = info?.FullName,
                 UserEmail = info?.Email
             };
+
+            ViewBag.Layout = GetLayout(role);
+
             return View(vm); // View: Delete.cshtml
         }
 
@@ -141,10 +147,22 @@ namespace CarManagementSystem.WebMVC.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (!IsStaffOrAdmin()) return RedirectToAction("Index", "Home");
+            var role = HttpContext.Session.GetString("UserRole") ?? "Admin";
 
             var res = await _feedbackService.DeleteAsync(id); // HARD DELETE
             TempData["msg"] = res.ok ? "Đã xóa feedback." : $"Xóa thất bại: {res.message}";
             return RedirectToAction("IndexAdmin","Feedback");
+        }
+
+        private string GetLayout(string userRole)
+        {
+            string layout = userRole switch
+            {
+                "Customer" => "~/Views/Shared/_Layout.cshtml",
+                "Admin" => "~/Views/Shared/_LayoutAdmin.cshtml",
+                _ => "~/Views/Shared/_LayoutStaff.cshtml",
+            };
+            return layout;
         }
     }
 }

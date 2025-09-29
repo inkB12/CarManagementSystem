@@ -1,0 +1,74 @@
+﻿@model CarManagementSystem.WebMVC.Models.EditOrderViewModel
+
+@{
+	Layout = ViewBag.Layout;
+	ViewData["Title"] = "EditOrder";
+}
+
+<div class="container mt-5">
+	<div class="row justify-content-center">
+		<div class="col-md-8">
+			<h2 class="mb-4 text-primary"><i class="fas fa-edit me-2"></i> Chỉnh sửa đơn hàng #@Model.Id</h2>
+			<hr />
+
+			<form asp-action="EditOrder" method="post">
+				@* Dùng để gửi ID đơn hàng đi *@
+				<input type="hidden" asp-for="Id" />
+
+				@if (!Context.Session.GetString("UserRole").Equals("Customer"))
+				{
+					@* Trạng thái *@
+					<div class="mb-3">
+						<label asp-for="Status" class="form-label">Trạng thái</label>
+						@* <textarea asp-for="Status" class="form-control" rows="3"></textarea> *@
+						<select asp-for="Status" class="form-control">
+							<option value="PENDING">Đang Xử Lý</option>
+							<option value="SUCCESS">Hoàn Thành</option>
+							<option value="CANCELLED">Đã Hủy</option>
+						</select>
+						<span asp-validation-for="Status" class="text-danger"></span>
+					</div>
+				}
+				else
+				{
+					<input type="hidden" asp-for="Status" />
+				}
+
+
+
+				@* Địa chỉ *@
+				<div class="mb-3">
+					<label asp-for="Address" class="form-label">Địa chỉ mới</label>
+					<input asp-for="Address" class="form-control" />
+					<span asp-validation-for="Address" class="text-danger"></span>
+				</div>
+
+				@* Mã bưu điện *@
+				<div class="mb-3">
+					<label asp-for="ZipCode" class="form-label">Mã bưu điện mới</label>
+					<input asp-for="ZipCode" class="form-control" />
+					<span asp-validation-for="ZipCode" class="text-danger"></span>
+				</div>
+
+				@* Ghi chú *@
+				<div class="mb-3">
+					<label asp-for="Note" class="form-label">Ghi chú (Tùy chọn)</label>
+					<textarea asp-for="Note" class="form-control" rows="3"></textarea>
+					<span asp-validation-for="Note" class="text-danger"></span>
+				</div>
+
+				@* Hiển thị lỗi chung *@
+				<div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+				<div class="d-flex justify-content-between mt-4">
+					<a asp-action="@(Context.Session.GetString("UserRole").Equals("Customer") ? "UserOrder" : "AllOrders")" class="btn btn-outline-secondary">
+						<i class="fas fa-arrow-left me-1"></i> Quay lại
+					</a>
+					<button type="submit" class="btn btn-primary">
+						<i class="fas fa-save me-1"></i> Lưu thay đổi
+					</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>

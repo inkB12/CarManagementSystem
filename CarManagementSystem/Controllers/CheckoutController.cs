@@ -2,8 +2,9 @@
 using CarManagementSystem.BusinessObjects;
 using CarManagementSystem.Services.Dtos.Momo;
 using CarManagementSystem.Services.Interfaces;
+using CarManagementSystem.WebMVC.Extensions;
 using CarManagementSystem.WebMVC.Models;
-using CarManagementSystem.WebMVC.Models.Checkout;
+using CarManagementSystem.WebMVC.Models.Cart;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
@@ -14,21 +15,43 @@ namespace CarManagementSystem.WebMVC.Controllers
     {
         private readonly IOrderService _orderService;
         private readonly IMomoService _momoService;
+        private readonly IPromotionService _promotionService;
 
-        public CheckoutController(IOrderService orderService, IMomoService momoService)
+        public CheckoutController(IOrderService orderService, IMomoService momoService, IPromotionService promotionService)
         {
             _orderService = orderService;
             _momoService = momoService;
+            _promotionService = promotionService;
         }
 
         [HttpGet]
         [Route("")]
-        public IActionResult Checkout()
+        public async Task<IActionResult> Checkout(int promotionId = 0)
         {
+            // 0 Validate Cart
+            var cart = HttpContext.Session.Get<List<CartItem>>("Cart") ?? [];
+            if (cart.Count == 0)
+            {
+                return RedirectToAction("Index", "Cart");
+            }
+
             // 1. Create ViewModel
+            var totalPrice = cart.Sum(c => c.Quantity * c.Price);
+            Promotion? promotion = null;
+
+            if (promotionId != 0)
+            {
+                promotion = await _promotionService.GetByIdAsync(promotionId);
+                totalPrice -= promotion == null ? 0 : promotion.Discount * totalPrice / 100;
+            }
+
             CheckoutViewModel model = new()
             {
-                CustomerInfo = new CustomerInfoModel()
+                CartItems = cart,
+                TotalPrice = totalPrice,
+                Promotion = promotion,
+                Promotions = await _promotionService.GetAllAsync(true),
+                ApplyPromotionId = promotionId
             };
 
             // 2. Pass to View
@@ -41,33 +64,77 @@ namespace CarManagementSystem.WebMVC.Controllers
         {
             if (!ModelState.IsValid)
             {
-                // For test only
-                var momoResponse = await _momoService.CreatePaymentAsync(null);
-
-                if (momoResponse != null && !momoResponse.PayUrl.IsNullOrEmpty())
-                {
-                    return Redirect(momoResponse.PayUrl);
-                }
-
                 // Check dữ liệu ko hợp lệ thì trả về View tb lỗi
                 return View(model);
             }
             else
             {
-                // Create Order
-                var response = await _orderService.CreateAsync(new Order()
+                // Get Cart Item List
+                var cartList = HttpContext.Session.Get<List<CartItem>>("Cart") ?? [];
+                if (cartList.Count == 0)
                 {
+                    // Back to Cart
+                    return RedirectToAction("Index", "Cart");
+                }
+                decimal total = cartList.Sum(c => c.Quantity * c.Price);
+
+                var orderDetails = new List<OrderDetail>();
+                foreach (var item in cartList)
+                {
+                    orderDetails.Add(new OrderDetail()
+                    {
+                        Quantity = item.Quantity,
+                        TotalPrice = item.Price * item.Quantity,
+                        ElectricVehicleId = item.CarId
+                    });
+                }
+
+                // Get User Id
+                int? userId = HttpContext.Session.GetInt32("UserId");
+                if (userId == null || userId == 0)
+                {
+                    //Back to Login
+                    return RedirectToAction("Login", "Auth");
+                }
+
+                // Get Promotion
+                Promotion? promotion = await _promotionService.GetByIdAsync(model.ApplyPromotionId);
+
+                // Create Order
+                var (ok, _, data) = await _orderService.CreateAsync(new Order()
+                {
+                    Total = model.TotalPrice,
+                    OrderDetails = orderDetails,
                     PaymentMethod = model.PaymentMethod,
                     Address = model.AddressInfo.Address,
                     ZipCode = model.AddressInfo.ZipCode,
                     Note = model.AddressInfo.Note,
-                    PromotionId = model.PromotionId,
+                    Promotion = promotion,
+                    UserId = (int)userId
                 });
 
-                if (response.ok)
+                if (ok)
                 {
-                    var createdOrder = response.data;
-                    var paymentUrl = "url";
+                    HttpContext.Session.Set<List<CartItem>>("Cart", []);
+
+                    switch (model.PaymentMethod)
+                    {
+                        case "Momo":
+                            // Create Payment Url
+                            var momoResponse = await _momoService.CreatePaymentAsync(data);
+
+                            if (momoResponse != null && !momoResponse.PayUrl.IsNullOrEmpty())
+                            {
+                                return Redirect(momoResponse.PayUrl);
+                            }
+                            break;
+
+                        default:
+                            // Redirect to order history
+                            return RedirectToAction("UserOrder", "Order", new { id = userId });
+                    }
+
+
                 }
                 return View(model);
             }
@@ -107,11 +174,14 @@ namespace CarManagementSystem.WebMVC.Controllers
         public async Task<IActionResult> MomoRedirect(int resultCode, string orderId)
         {
             string paymentMessage;
+            string status = "CANCELLED";
+            string subStringId = orderId[35..];
 
             if (resultCode == 0)
             {
                 // Succesful Payment
                 paymentMessage = "Đơn hàng thanh toán thành công";
+                status = "SUCCESS";
             }
             else
             {
@@ -119,8 +189,21 @@ namespace CarManagementSystem.WebMVC.Controllers
                 paymentMessage = "Đơn hàng thanh toán thất bại";
             }
 
+            if (int.TryParse(subStringId, out int id))
+            {
+                await _orderService.UpdateAsync(new Order()
+                {
+                    Id = id,
+                    Status = status
+                });
+            }
+            else
+            {
+                paymentMessage = "Đơn hàng thanh toán thất bại do mã đơn lỗi";
+            }
+
             ViewBag.PaymentMessage = paymentMessage;
-            ViewBag.OrderId = orderId;
+            ViewBag.OrderId = id;
             ViewBag.ResultCode = resultCode;
 
             return View();
