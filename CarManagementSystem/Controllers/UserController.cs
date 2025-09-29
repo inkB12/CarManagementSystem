@@ -26,6 +26,11 @@ namespace CarManagementSystem.WebMVC.Controllers
         {
             if (!IsAdmin()) return RedirectToAction("Index", "Home");
             var list = await _users.GetAllAsync(onlyActive: false);
+            var admin = list.FirstOrDefault(u => u.Role.Equals("Admin"));
+            if (admin != null)
+            {
+                list.Remove(admin);
+            }
             return View(list);
         }
 

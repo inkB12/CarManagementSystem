@@ -50,6 +50,10 @@ namespace CarManagementSystem.WebMVC.Controllers
                 Items = items
             };
 
+            var role = HttpContext.Session.GetString("UserRole") ?? "Admin";
+            ViewBag.Layout = GetLayout(role);
+            ViewBag.Role = role;
+
             return View(vm);
         }
 
@@ -140,6 +144,17 @@ namespace CarManagementSystem.WebMVC.Controllers
             var (ok, msg) = await _svc.DeleteAsync(id);
             TempData[ok ? "SuccessMessage" : "ErrorMessage"] = msg;
             return RedirectToRoute("AdminPromotionIndex");
+        }
+
+        private string GetLayout(string userRole)
+        {
+            string layout = userRole switch
+            {
+                "Customer" => "~/Views/Shared/_Layout.cshtml",
+                "Admin" => "~/Views/Shared/_LayoutAdmin.cshtml",
+                _ => "~/Views/Shared/_LayoutStaff.cshtml",
+            };
+            return layout;
         }
     }
 }

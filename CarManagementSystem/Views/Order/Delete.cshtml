@@ -1,17 +1,17 @@
 ﻿@model CarManagementSystem.WebMVC.Models.OrderViewModel
 @{
-    ViewData["Title"] = "DeleteOrder";
+	ViewData["Title"] = "DeleteOrder";
 }
 
 <h2>Hủy Đơn Hàng</h2>
 
 <div class="alert alert-danger">
-    Bạn có chắc chắn muốn hủy đơn hàng <strong>@Model.Id</strong>?
+	Bạn có chắc chắn muốn hủy đơn hàng <strong>@Model.Id</strong>?
 </div>
 
 <form asp-action="Delete" method="post">
-    @Html.AntiForgeryToken()
-    <input type="hidden" asp-for="Id" />
-    <button type="submit" class="btn btn-danger">Đồng ý, Xóa</button>
-    <a asp-action="Index" class="btn btn-secondary">Hủy</a>
+	@Html.AntiForgeryToken()
+	<input type="hidden" asp-for="Id" />
+	<button type="submit" class="btn btn-danger">Đồng ý, Xóa</button>
+	<a asp-action="@(Context.Session.GetString("UserRole").Equals("Customer") ? "UserOrder" : "AllOrders")" class="btn btn-secondary">Hủy</a>
 </form>

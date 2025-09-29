@@ -137,8 +137,8 @@ namespace CarManagementSystem.WebMVC.Controllers
             if (ok)
             {
                 string? userRole = HttpContext.Session.GetString("UserRole") ?? "Customer";
-                (string action, string control) redirecTo = GetAction(userRole);
-                return RedirectToAction(redirecTo.action, redirecTo.control);
+                (string action, string control) = GetAction(userRole);
+                return RedirectToAction(action, control);
             }
 
             ModelState.AddModelError(string.Empty, $"Cập nhật thất bại: {message}");
@@ -176,7 +176,9 @@ namespace CarManagementSystem.WebMVC.Controllers
             if (ok) TempData["SuccessMessage"] = message;
             else TempData["ErrorMessage"] = message;
 
-            return RedirectToAction("UserOrder", "Order");
+            string? userRole = HttpContext.Session.GetString("UserRole") ?? "Customer";
+            (string action, string control) = GetAction(userRole);
+            return RedirectToAction(action, control);
         }
 
         private string GetLayout(string userRole)

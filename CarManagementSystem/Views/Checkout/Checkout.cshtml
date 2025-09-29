@@ -11,8 +11,8 @@
 	@* Checkout Info Form *@
 	<div class="col-md-6">
 		<form asp-action="Checkout" method="post">
-			<input type="hidden" asp-for="ApplyPromotionId"/>
-			<input type="hidden" asp-for="TotalPrice"/>
+			<input type="hidden" asp-for="ApplyPromotionId" />
+			<input type="hidden" asp-for="TotalPrice" />
 
 			<div style="margin:20px">
 				<h4>Thông tin địa chỉ</h4>
@@ -128,6 +128,7 @@
 			@* <input asp-for="PromotionId" class="form-control" /> *@
 			<form asp-action="Checkout" method="get">
 				<select name="promotionId" class="form-control">
+					<option>None</option>
 					@foreach (var promotion in Model.Promotions)
 					{
 						<option value="@promotion.Id">@promotion.Code: @promotion.Description</option>

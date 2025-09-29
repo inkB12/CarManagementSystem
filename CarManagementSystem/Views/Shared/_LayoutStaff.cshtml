@@ -117,14 +117,9 @@
                 <i class="bi bi-lightning-charge-fill me-2"></i>Trang quản lý
             </div>
             <div class="list-group list-group-flush">
-                @* <a asp-controller="Staff" asp-action="Index" class="list-group-item active"><i class="bi bi-house-door-fill me-2"></i>Dashboard</a> *@
-                <a asp-controller="Users" asp-action="Index" class="list-group-item"><i class="bi bi-people-fill me-2"></i>Người dùng</a>
-                <a asp-controller="CarCompanies" asp-action="Index" class="list-group-item"><i class="bi bi-building me-2"></i>Hãng xe</a>
-                <a asp-controller="VehicleCategories" asp-action="Index" class="list-group-item"><i class="bi bi-building me-2"></i>Loại xe</a>
-                <a asp-controller="ElectricVehicles" asp-action="IndexAdmin" class="list-group-item"><i class="bi bi-truck-front me-2"></i>Xe điện</a>
                 <a asp-controller="Order" asp-action="AllOrders" class="list-group-item"><i class="bi bi-cart-check me-2"></i>Đơn hàng</a>
                 <a asp-controller="Promotions" asp-action="Index" class="list-group-item"><i class="bi bi-percent me-2"></i>Khuyến mãi</a>
-                <a asp-controller="Reports" asp-action="Index" class="list-group-item"><i class="bi bi-bar-chart-line me-2"></i>Báo cáo</a>
+                <a asp-controller="Feedback" asp-action="IndexAdmin" class="list-group-item"><i class="bi bi-chat-dots me-2"></i>Feedback</a>
             </div>
         </div>
 
@@ -144,7 +139,7 @@
                             <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i> Cài đặt</a></li>
                             <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i> Hồ sơ</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="#"><i class="bi bi-box-arrow-right me-2"></i> Đăng xuất</a></li>
+                            <li><a class="dropdown-item" asp-controller="Auth" asp-action="Logout"><i class="bi bi-box-arrow-right me-2"></i> Đăng xuất</a></li>
                         </ul>
                     </div>
                 </div>
