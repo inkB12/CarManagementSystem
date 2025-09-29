@@ -54,6 +54,7 @@ namespace CarManagementSystem.WebMVC.Controllers
         {
             // Kiểm tra đăng nhập
             int? userId = HttpContext.Session.GetInt32("UserId");
+            string? userRole = HttpContext.Session.GetString("UserRole") ?? "Customer";
 
             if (userId == null || userId == 0)
             {
@@ -80,6 +81,8 @@ namespace CarManagementSystem.WebMVC.Controllers
                     User = order.User
                 });
             }
+
+            ViewBag.Layout = GetLayout(userRole);
 
             return View(orderViewModels);
         }
@@ -133,7 +136,9 @@ namespace CarManagementSystem.WebMVC.Controllers
 
             if (ok)
             {
-                return RedirectToAction("UserOrder", "Order");
+                string? userRole = HttpContext.Session.GetString("UserRole") ?? "Customer";
+                (string action, string control) redirecTo = GetAction(userRole);
+                return RedirectToAction(redirecTo.action, redirecTo.control);
             }
 
             ModelState.AddModelError(string.Empty, $"Cập nhật thất bại: {message}");
@@ -183,6 +188,17 @@ namespace CarManagementSystem.WebMVC.Controllers
                 _ => "~/Views/Shared/_LayoutStaff.cshtml",
             };
             return layout;
+        }
+
+        private (string action, string controller) GetAction(string userRole)
+        {
+            (string action, string controller) result = userRole switch
+            {
+                "Customer" => ("UserOrder", "Order"),
+                "Admin" => ("AllOrders", "Order"),
+                _ => ("AllOrders", "Order"),
+            };
+            return result;
         }
     }
 }

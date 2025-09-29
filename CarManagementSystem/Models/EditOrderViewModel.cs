@@ -17,7 +17,6 @@ namespace CarManagementSystem.WebMVC.Models
 
         public string? Note { get; set; }
 
-        [Required]
         public string? Status { get; set; }
     }
 }
