@@ -204,7 +204,7 @@ namespace CarManagementSystem.WebMVC.Controllers
             var (ok, message, _) = await _vehicleSvc.CreateAsync(entity);
             TempData[ok ? "SuccessMessage" : "ErrorMessage"] = message;
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("IndexAdmin");
         }
 
         // GET: ElectricVehicles/Edit/5

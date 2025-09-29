@@ -26,7 +26,10 @@
                 <div class="collapse navbar-collapse" id="navbarMain">
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Index">Trang chủ</a></li>
-                        <li class="nav-item"><a class="nav-link" asp-controller="Promotions" asp-action="Index">Khuyến mãi</a></li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Index","Home")#promotions">Khuyến mãi</a>
+                        </li>
+
                         <li class="nav-item"><a class="nav-link" asp-controller="ElectricVehicles" asp-action="Index">Xe điện</a></li>
                         <vc:cart-count></vc:cart-count>
                         @if (Context.Session.GetInt32("UserId") == null)
@@ -98,7 +101,9 @@
                     <h6 class="fw-semibold text-uppercase mb-3">Khám phá</h6>
                     <ul class="list-unstyled small">
                         <li><a href="/ElectricVehicles" class="text-light text-decoration-none hover-electric">Xe điện</a></li>
-                        <li><a href="/Promotions" class="text-light text-decoration-none hover-electric">Khuyến mãi</a></li>
+                        <li class="nav-item">
+                            <a class="text-light text-decoration-none hover-electric" href="@Url.Action("Index","Home")#promotions">Khuyến mãi</a>
+                        </li>
                         <li><a href="/About" class="text-light text-decoration-none hover-electric">Về chúng tôi</a></li>
                         <li><a href="/Contact" class="text-light text-decoration-none hover-electric">Liên hệ</a></li>
                     </ul>
@@ -126,7 +131,42 @@
     @* <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script> *@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
+   
+
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+    <script>
+        (function () {
+          const NAV_SELECTOR = '.navbar.sticky-top';
+          const getOffset = () => (document.querySelector(NAV_SELECTOR)?.offsetHeight || 0) + 8;
+
+          // Click vào link có data-scroll-to và phần tử đã có trên trang => cuộn mượt
+          document.querySelectorAll('a[data-scroll-to]').forEach(a => {
+            a.addEventListener('click', function (e) {
+              const id = a.getAttribute('data-scroll-to');
+              const target = document.getElementById(id);
+              if (target) {
+                e.preventDefault();
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                // hiệu chỉnh khỏi bị navbar che
+                setTimeout(() => window.scrollBy({ top: -getOffset(), left: 0, behavior: 'instant' }), 0);
+                history.replaceState(null, '', '#' + id);
+              }
+            });
+          });
+
+          // Khi load trang với hash (đi từ trang khác về /#promotions)
+          window.addEventListener('load', function () {
+            const id = location.hash && location.hash.substring(1);
+            const target = id && document.getElementById(id);
+            if (target) {
+              setTimeout(() => {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                setTimeout(() => window.scrollBy({ top: -getOffset(), left: 0, behavior: 'instant' }), 0);
+              }, 0);
+            }
+          });
+        })();
+    </script>
 </body>
 </html>

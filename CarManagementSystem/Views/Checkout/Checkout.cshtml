@@ -11,6 +11,8 @@
 	@* Checkout Info Form *@
 	<div class="col-md-6">
 		<form asp-action="Checkout" method="post">
+			<input type="hidden" asp-for="ApplyPromotionId"/>
+			<input type="hidden" asp-for="TotalPrice"/>
 
 			<div style="margin:20px">
 				<h4>Thông tin địa chỉ</h4>
@@ -45,12 +47,6 @@
 						<option value="Installment">Trả góp</option>
 					</select>
 					<span asp-validation-for="PaymentMethod" class="text-danger"></span>
-				</div>
-
-				<p>Mã giảm giá </p>
-				<div>
-					<input asp-for="PromotionId" class="form-control" />
-					<span asp-validation-for="PromotionId" class="text-danger"></span>
 				</div>
 			</div>
 
@@ -97,6 +93,19 @@
 						}
 					</tbody>
 					<tfoot>
+						@if (Model.Promotion != null)
+						{
+							<tr>
+								<td colspan="2" class="text-right text-success">
+									<strong>Giảm giá @Model.Promotion.Discount %:</strong>
+								</td>
+
+								<td class="text-right text-success">
+									<strong>@((Model.TotalPrice - Model.TotalPrice / (1 - Model.Promotion.Discount / 100)).ToString("N0")) VNĐ</strong>
+								</td>
+							</tr>
+						}
+
 						<tr>
 							<td colspan="2" class="text-right"><strong>Tổng cộng:</strong></td>
 							<td class="text-right"><strong>@(Model.TotalPrice.ToString("N0")) VNĐ</strong></td>
@@ -113,7 +122,25 @@
 				</a>
 			</div>
 		</div>
+
+		<h4>Mã giảm giá </h4>
+		<div class="mt-2">
+			@* <input asp-for="PromotionId" class="form-control" /> *@
+			<form asp-action="Checkout" method="get">
+				<select name="promotionId" class="form-control">
+					@foreach (var promotion in Model.Promotions)
+					{
+						<option value="@promotion.Id">@promotion.Code: @promotion.Description</option>
+					}
+				</select>
+				<button type="submit" class="btn btn-outline-primary">
+					Áp dụng
+				</button>
+			</form>
+		</div>
 	</div>
+
+
 </div>
 
 

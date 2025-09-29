@@ -1,0 +1,19 @@
+﻿@model CarManagementSystem.WebMVC.Models.PromotionFormViewModel
+@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    ViewData["Title"] = "Xóa khuyến mãi";
+}
+<h1 class="mb-4">Xóa khuyến mãi</h1>
+
+<div class="alert alert-danger">
+    Bạn có chắc chắn muốn xóa khuyến mãi
+    <strong>@Model.Code</strong>
+    (-@Model.Discount.ToString("0.#")%)?
+</div>
+
+<form asp-route="AdminPromotionDeletePost" method="post" class="d-flex gap-2">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="id" value="@Model.Id" />
+    <button class="btn btn-danger"><i class="bi bi-trash me-1"></i> Đồng ý, xóa</button>
+    <a asp-route="AdminPromotionIndex" class="btn btn-secondary">Hủy</a>
+</form>

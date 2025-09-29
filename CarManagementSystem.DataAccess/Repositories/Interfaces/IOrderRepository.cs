@@ -13,5 +13,8 @@ namespace CarManagementSystem.DataAccess.Repositories.Interfaces
         Task<Order> UpdateAsync(Order order);
         Task<bool> DeleteAsync(int id);
         Task<int> SaveChangeAsync();
+
+        // NEW: lấy đơn theo khoảng ngày + trạng thái
+        Task<List<Order>> GetOrdersInRangeByStatusAsync(DateTime start, DateTime end, string status);
     }
 }

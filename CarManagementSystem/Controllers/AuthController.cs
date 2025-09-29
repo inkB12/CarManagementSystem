@@ -29,10 +29,16 @@ namespace CarManagementSystem.WebMVC.Controllers
             }
 
             // lưu vào session
-            HttpContext.Session.SetInt32("UserId", response.data.Id);
+            HttpContext.Session.SetInt32("UserId", response.data!.Id);
             HttpContext.Session.SetString("UserEmail", response.data.Email);
             HttpContext.Session.SetString("UserRole", response.data.Role);
             HttpContext.Session.SetString("UserFullName", response.data.FullName);
+
+            if(response.data.Role == "Admin")
+            {
+                TempData["msg"] = "Login success";
+                return RedirectToAction("Index","Admin");
+            }    
 
             TempData["msg"] = "Login success";
             return RedirectToAction("Index","Home");

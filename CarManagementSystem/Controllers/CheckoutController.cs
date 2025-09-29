@@ -1,4 +1,5 @@
-﻿using CarManagementSystem.BusinessObjects;
+﻿using System.Threading.Tasks;
+using CarManagementSystem.BusinessObjects;
 using CarManagementSystem.Services.Dtos.Momo;
 using CarManagementSystem.Services.Interfaces;
 using CarManagementSystem.WebMVC.Extensions;
@@ -14,16 +15,18 @@ namespace CarManagementSystem.WebMVC.Controllers
     {
         private readonly IOrderService _orderService;
         private readonly IMomoService _momoService;
+        private readonly IPromotionService _promotionService;
 
-        public CheckoutController(IOrderService orderService, IMomoService momoService)
+        public CheckoutController(IOrderService orderService, IMomoService momoService, IPromotionService promotionService)
         {
             _orderService = orderService;
             _momoService = momoService;
+            _promotionService = promotionService;
         }
 
         [HttpGet]
         [Route("")]
-        public IActionResult Checkout()
+        public async Task<IActionResult> Checkout(int promotionId = 0)
         {
             // 0 Validate Cart
             var cart = HttpContext.Session.Get<List<CartItem>>("Cart") ?? [];
@@ -33,10 +36,22 @@ namespace CarManagementSystem.WebMVC.Controllers
             }
 
             // 1. Create ViewModel
+            var totalPrice = cart.Sum(c => c.Quantity * c.Price);
+            Promotion? promotion = null;
+
+            if (promotionId != 0)
+            {
+                promotion = await _promotionService.GetByIdAsync(promotionId);
+                totalPrice -= promotion == null ? 0 : promotion.Discount * totalPrice / 100;
+            }
+
             CheckoutViewModel model = new()
             {
                 CartItems = cart,
-                TotalPrice = cart.Sum(c => c.Quantity * c.Price),
+                TotalPrice = totalPrice,
+                Promotion = promotion,
+                Promotions = await _promotionService.GetAllAsync(true),
+                ApplyPromotionId = promotionId
             };
 
             // 2. Pass to View
@@ -82,16 +97,19 @@ namespace CarManagementSystem.WebMVC.Controllers
                     return RedirectToAction("Login", "Auth");
                 }
 
+                // Get Promotion
+                Promotion? promotion = await _promotionService.GetByIdAsync(model.ApplyPromotionId);
+
                 // Create Order
                 var (ok, _, data) = await _orderService.CreateAsync(new Order()
                 {
-                    Total = total,
+                    Total = model.TotalPrice,
                     OrderDetails = orderDetails,
                     PaymentMethod = model.PaymentMethod,
                     Address = model.AddressInfo.Address,
                     ZipCode = model.AddressInfo.ZipCode,
                     Note = model.AddressInfo.Note,
-                    PromotionId = model.PromotionId,
+                    Promotion = promotion,
                     UserId = (int)userId
                 });
 

@@ -1,0 +1,29 @@
+﻿@model CarManagementSystem.WebMVC.Models.PromotionFormViewModel
+<div class="row g-3">
+    <div class="col-md-6">
+        <label asp-for="Code" class="form-label"></label>
+        <input asp-for="Code" class="form-control" />
+        <span asp-validation-for="Code" class="text-danger"></span>
+    </div>
+    <div class="col-md-3">
+        <label asp-for="Discount" class="form-label"></label>
+        <div class="input-group">
+            <input asp-for="Discount" type="number" min="0" max="100" step="0.1" class="form-control" />
+            <span class="input-group-text">%</span>
+        </div>
+        <span asp-validation-for="Discount" class="text-danger"></span>
+    </div>
+    <div class="col-md-3">
+        <label asp-for="Status" class="form-label"></label>
+        <select asp-for="Status" class="form-select">
+            <option>Active</option>
+            <option>Inactive</option>
+        </select>
+        <span asp-validation-for="Status" class="text-danger"></span>
+    </div>
+    <div class="col-12">
+        <label asp-for="Description" class="form-label"></label>
+        <textarea asp-for="Description" rows="3" class="form-control" placeholder="Mô tả ngắn..."></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+</div>
