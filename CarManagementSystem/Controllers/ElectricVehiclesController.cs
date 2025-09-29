@@ -131,10 +131,15 @@ namespace CarManagementSystem.WebMVC.Controllers
             return View(vm);
         }
 
-
+        private bool IsAdmin()
+        {
+            var role = HttpContext.Session.GetString("UserRole");
+            return string.Equals(role, "Admin", StringComparison.OrdinalIgnoreCase);
+        }
         // GET: ElectricVehicles
         public async Task<IActionResult> IndexAdmin()
         {
+            if (!IsAdmin()) return RedirectToAction("Index", "Home");
             var vehicles = await _vehicleSvc.GetAllAsync(false);
 
             var vm = vehicles.Select(v => new VehicleViewModel
@@ -160,6 +165,7 @@ namespace CarManagementSystem.WebMVC.Controllers
         // GET: ElectricVehicles/Create
         public async Task<IActionResult> Create()
         {
+            if (!IsAdmin()) return RedirectToAction("Index", "Home");
             await LoadDropdowns();
             return View();
         }
@@ -169,6 +175,7 @@ namespace CarManagementSystem.WebMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(VehicleViewModel vm)
         {
+            if (!IsAdmin()) return RedirectToAction("Index", "Home");
             if (!ModelState.IsValid)
             {
                 await LoadDropdowns();
@@ -210,6 +217,7 @@ namespace CarManagementSystem.WebMVC.Controllers
         // GET: ElectricVehicles/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
+            if (!IsAdmin()) return RedirectToAction("Index", "Home");
             var entity = await _vehicleSvc.GetByIdAsync(id);
             if (entity == null) return NotFound();
 
@@ -236,6 +244,7 @@ namespace CarManagementSystem.WebMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(VehicleViewModel vm)
         {
+            if (!IsAdmin()) return RedirectToAction("Index", "Home");
             if (!ModelState.IsValid)
             {
                 await LoadDropdowns();
@@ -272,12 +281,13 @@ namespace CarManagementSystem.WebMVC.Controllers
             var (ok, message, _) = await _vehicleSvc.UpdateAsync(entity);
             TempData[ok ? "SuccessMessage" : "ErrorMessage"] = message;
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("IndexAdmin");
         }
 
         // GET: ElectricVehicles/Delete/5
         public async Task<IActionResult> Delete(int id)
         {
+            if (!IsAdmin()) return RedirectToAction("Index", "Home");
             var entity = await _vehicleSvc.GetByIdAsync(id);
             if (entity == null) return NotFound();
 
@@ -297,9 +307,10 @@ namespace CarManagementSystem.WebMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            if (!IsAdmin()) return RedirectToAction("Index", "Home");
             var (ok, message) = await _vehicleSvc.DeleteAsync(id);
             TempData[ok ? "SuccessMessage" : "ErrorMessage"] = message;
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("IndexAdmin");
         }
 
         // chỉ load những CarCompany và VehicleCategory còn active

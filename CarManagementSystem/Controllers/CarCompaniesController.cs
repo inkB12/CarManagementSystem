@@ -14,9 +14,16 @@ namespace CarManagementSystem.WebMVC.Controllers
             _service = service;
         }
 
+        private bool IsAdmin()
+        {
+            var role = HttpContext.Session.GetString("UserRole");
+            return string.Equals(role, "Admin", StringComparison.OrdinalIgnoreCase);
+        }
+
         // GET: CarCompanies
         public async Task<IActionResult> Index()
         {
+            if (!IsAdmin()) return RedirectToAction("Index", "Home");
             var companies = await _service.GetAllAsync(false);
             var vm = companies.Select(c => new CarCompanyViewModel
             {
@@ -33,6 +40,7 @@ namespace CarManagementSystem.WebMVC.Controllers
         // GET: CarCompanies/Create
         public IActionResult Create()
         {
+            if (!IsAdmin()) return RedirectToAction("Index", "Home");
             return View();
         }
 
@@ -41,6 +49,7 @@ namespace CarManagementSystem.WebMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CarCompanyViewModel vm)
         {
+            if (!IsAdmin()) return RedirectToAction("Index", "Home");
             if (!ModelState.IsValid) return View(vm);
 
             var entity = new CarCompany
@@ -61,6 +70,7 @@ namespace CarManagementSystem.WebMVC.Controllers
         // GET: CarCompanies/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
+            if (!IsAdmin()) return RedirectToAction("Index", "Home");
             var entity = await _service.GetByIdAsync(id);
             if (entity == null) return NotFound();
 
@@ -80,6 +90,7 @@ namespace CarManagementSystem.WebMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(CarCompanyViewModel vm)
         {
+            if (!IsAdmin()) return RedirectToAction("Index", "Home");
             if (!ModelState.IsValid) return View(vm);
 
             var entity = new CarCompany
@@ -101,6 +112,7 @@ namespace CarManagementSystem.WebMVC.Controllers
         // GET: CarCompanies/Delete/5
         public async Task<IActionResult> Delete(int id)
         {
+            if (!IsAdmin()) return RedirectToAction("Index", "Home");
             var entity = await _service.GetByIdAsync(id);
             if (entity == null) return NotFound();
 
@@ -120,6 +132,7 @@ namespace CarManagementSystem.WebMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            if (!IsAdmin()) return RedirectToAction("Index", "Home");
             var (ok, message) = await _service.DeleteAsync(id);
 
             if (ok) TempData["SuccessMessage"] = message;

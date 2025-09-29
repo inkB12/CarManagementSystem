@@ -55,16 +55,15 @@ namespace CarManagementSystem.WebMVC.Controllers
             return View(vm);
         }
 
-        private bool IsStaffOrAdmin()
+        private bool IsAdmin()
         {
             var role = HttpContext.Session.GetString("UserRole");
-            return string.Equals(role, "Staff", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(role, "Admin", StringComparison.OrdinalIgnoreCase);
+            return string.Equals(role, "Admin", StringComparison.OrdinalIgnoreCase);
         }
 
         public async Task<IActionResult> IndexAdmin(string? q = null)
         {
-            if (!IsStaffOrAdmin()) return RedirectToAction("Index", "Home");
+            if (!IsAdmin()) return RedirectToAction("Index", "Home");
             var role = HttpContext.Session.GetString("UserRole") ?? "Admin";
 
             // Lấy tất cả feedback 
@@ -116,7 +115,7 @@ namespace CarManagementSystem.WebMVC.Controllers
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
-            if (!IsStaffOrAdmin()) return RedirectToAction("Index", "Home");
+            if (!IsAdmin()) return RedirectToAction("Index", "Home");
 
             var f = await _feedbackService.GetByIdAsync(id);
             if (f == null) return NotFound();
@@ -146,7 +145,7 @@ namespace CarManagementSystem.WebMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (!IsStaffOrAdmin()) return RedirectToAction("Index", "Home");
+            if (!IsAdmin()) return RedirectToAction("Index", "Home");
             var role = HttpContext.Session.GetString("UserRole") ?? "Admin";
 
             var res = await _feedbackService.DeleteAsync(id); // HARD DELETE

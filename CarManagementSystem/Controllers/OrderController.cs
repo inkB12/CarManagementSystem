@@ -50,8 +50,15 @@ namespace CarManagementSystem.WebMVC.Controllers
             return View(orderViewModels);
         }
 
+
+        private bool IsAdmin()
+        {
+            var role = HttpContext.Session.GetString("UserRole");
+            return string.Equals(role, "Admin", StringComparison.OrdinalIgnoreCase);
+        }
         public async Task<IActionResult> AllOrders()
         {
+            if (!IsAdmin()) return RedirectToAction("Index", "Home");
             // Kiểm tra đăng nhập
             int? userId = HttpContext.Session.GetInt32("UserId");
             string? userRole = HttpContext.Session.GetString("UserRole") ?? "Customer";

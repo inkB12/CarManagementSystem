@@ -13,10 +13,17 @@ namespace CarManagementSystem.WebMVC.Controllers
         private readonly IPromotionService _svc;
         public PromotionsController(IPromotionService svc) => _svc = svc;
 
+        private bool IsAdmin()
+        {
+            var role = HttpContext.Session.GetString("UserRole");
+            return string.Equals(role, "Admin", StringComparison.OrdinalIgnoreCase);
+        }
+
         // LIST
         [HttpGet("admin/promotions", Name = "AdminPromotionIndex")]
         public async Task<IActionResult> Index(int page = 1, int pageSize = 10, string? q = null, string? status = null)
         {
+            if (!IsAdmin()) return RedirectToAction("Index", "Home");
             var all = await _svc.GetAllAsync(false);
 
             if (!string.IsNullOrWhiteSpace(q))
@@ -59,12 +66,17 @@ namespace CarManagementSystem.WebMVC.Controllers
 
         // CREATE
         [HttpGet("admin/promotions/create", Name = "AdminPromotionCreateGet")]
-        public IActionResult Create() => View(new PromotionFormViewModel { Status = "Active" });
+        public IActionResult Create()
+        {
+            if (!IsAdmin()) return RedirectToAction("Index", "Home");
+            return View(new PromotionFormViewModel { Status = "Active" });
+        }
 
         [HttpPost("admin/promotions/create", Name = "AdminPromotionCreatePost")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(PromotionFormViewModel vm)
         {
+            if (!IsAdmin()) return RedirectToAction("Index", "Home");
             if (!ModelState.IsValid) return View(vm);
 
             var entity = new Promotion
@@ -84,6 +96,7 @@ namespace CarManagementSystem.WebMVC.Controllers
         [HttpGet("admin/promotions/edit/{id:int}", Name = "AdminPromotionEditGet")]
         public async Task<IActionResult> Edit(int id)
         {
+            if (!IsAdmin()) return RedirectToAction("Index", "Home");
             var p = await _svc.GetByIdAsync(id);
             if (p == null) return NotFound();
 
@@ -103,6 +116,7 @@ namespace CarManagementSystem.WebMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(PromotionFormViewModel vm)
         {
+            if (!IsAdmin()) return RedirectToAction("Index", "Home");
             if (!ModelState.IsValid) return View(vm);
 
             var entity = new Promotion
@@ -123,6 +137,7 @@ namespace CarManagementSystem.WebMVC.Controllers
         [HttpGet("admin/promotions/delete/{id:int}", Name = "AdminPromotionDeleteGet")]
         public async Task<IActionResult> Delete(int id)
         {
+            if (!IsAdmin()) return RedirectToAction("Index", "Home");
             var p = await _svc.GetByIdAsync(id);
             if (p == null) return NotFound();
 
@@ -141,6 +156,7 @@ namespace CarManagementSystem.WebMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            if (!IsAdmin()) return RedirectToAction("Index", "Home");
             var (ok, msg) = await _svc.DeleteAsync(id);
             TempData[ok ? "SuccessMessage" : "ErrorMessage"] = msg;
             return RedirectToRoute("AdminPromotionIndex");

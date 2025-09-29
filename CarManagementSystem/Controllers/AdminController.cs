@@ -11,6 +11,7 @@ namespace CarManagementSystem.WebMVC.Controllers
         private readonly IVehicleCategoryService _categoryService;
         private readonly IElectricVehicleService _vehicleService;
 
+
         public AdminController(
             ICarCompanyService carCompanyService,
             IVehicleCategoryService categoryService,
@@ -21,8 +22,14 @@ namespace CarManagementSystem.WebMVC.Controllers
             _vehicleService = vehicleService;
         }
 
+        private bool IsAdmin()
+        {
+            var role = HttpContext.Session.GetString("UserRole");
+            return string.Equals(role, "Admin", StringComparison.OrdinalIgnoreCase);
+        }
         public async Task<IActionResult> Index()
         {
+            if (!IsAdmin()) return RedirectToAction("Index", "Home");
             var vm = new DashboardViewModel
             {
                 TotalCarCompanies = (await _carCompanyService.GetAllAsync()).Count,

@@ -13,9 +13,16 @@ namespace CarManagementSystem.WebMVC.Controllers
             _reportService = reportService;
         }
 
+        private bool IsAdmin()
+        {
+            var role = HttpContext.Session.GetString("UserRole");
+            return string.Equals(role, "Admin", StringComparison.OrdinalIgnoreCase);
+        }
+
         [HttpGet]
         public async Task<IActionResult> Index(int? month, int? year)
         {
+            if (!IsAdmin()) return RedirectToAction("Index", "Home");
             var m = month ?? DateTime.Now.Month;
             var y = year ?? DateTime.Now.Year;
 
