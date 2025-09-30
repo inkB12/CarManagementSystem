@@ -54,7 +54,7 @@ namespace CarManagementSystem.WebMVC.Controllers
         private bool IsAdmin()
         {
             var role = HttpContext.Session.GetString("UserRole");
-            return string.Equals(role, "Admin", StringComparison.OrdinalIgnoreCase);
+            return string.Equals(role, "Admin", StringComparison.OrdinalIgnoreCase) || string.Equals(role, "Staff", StringComparison.OrdinalIgnoreCase);
         }
         public async Task<IActionResult> AllOrders()
         {

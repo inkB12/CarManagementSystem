@@ -16,7 +16,8 @@ namespace CarManagementSystem.WebMVC.Controllers
         private bool IsAdmin()
         {
             var role = HttpContext.Session.GetString("UserRole");
-            return string.Equals(role, "Admin", StringComparison.OrdinalIgnoreCase);
+            return string.Equals(role, "Admin", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(role, "Staff", StringComparison.OrdinalIgnoreCase);
         }
 
         // LIST
@@ -24,7 +25,7 @@ namespace CarManagementSystem.WebMVC.Controllers
         public async Task<IActionResult> Index(int page = 1, int pageSize = 10, string? q = null, string? status = null)
         {
             if (!IsAdmin()) return RedirectToAction("Index", "Home");
-            var all = await _svc.GetAllAsync(false);
+            var all = await _svc.GetAllAsync(true);
 
             if (!string.IsNullOrWhiteSpace(q))
             {

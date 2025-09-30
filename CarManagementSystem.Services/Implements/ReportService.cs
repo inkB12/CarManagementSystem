@@ -20,7 +20,7 @@ namespace CarManagementSystem.Services.Implements
             var start = new DateTime(year, month, 1);
             var end = start.AddMonths(1);
 
-            var orders = await _orderRepo.GetOrdersInRangeByStatusAsync(start, end, Completed);
+            var orders = await _orderRepo.GetOrdersInRangeByStatusAsync(start, end, "SUCCESS");
 
             var dto = new MonthlyRevenueReportDto
             {

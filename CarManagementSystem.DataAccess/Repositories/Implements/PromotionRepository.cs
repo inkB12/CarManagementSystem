@@ -46,7 +46,7 @@ namespace CarManagementSystem.DataAccess.Repositories.Services
             var p = await _db.Promotions.FindAsync(id);
             if (p == null) return false;
 
-            _db.Promotions.Remove(p);
+            p.Status = "InActive";
             await _db.SaveChangesAsync();
             return true;
         }
