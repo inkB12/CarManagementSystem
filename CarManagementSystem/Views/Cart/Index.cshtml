@@ -1,0 +1,94 @@
+﻿@model CarManagementSystem.WebMVC.Models.CartViewModel
+@{
+	ViewData["Title"] = "Cart";
+}
+
+<h2 class="mt-4 mb-4">Giỏ hàng</h2>
+<hr />
+
+@if (Model.CartItems.Count == 0)
+{
+	<div class="alert alert-info text-center">
+		<strong>Giỏ hàng của bạn đang trống!</strong>
+		<p>Hãy thêm một vài chiếc xe vào giỏ hàng để bắt đầu thanh toán.</p>
+	</div>
+}
+else
+{
+	@* Cart Review *@
+	<div class="table-responsive">
+		<table class="table table-bordered table-hover">
+			<thead class="thead-light">
+				<tr>
+					<th>Sản phẩm</th>
+					<th class="text-right">Giá</th>
+					<th class="text-center">Số lượng</th>
+					<th class="text-right">Tạm tính</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var item in Model.CartItems)
+				{
+					<tr>
+						<td>
+							<img src="@item.ImageUrl" alt="@item.CarName" style="width: 50px; height: 50px; object-fit: cover; margin-right: 10px;" />
+							<strong>@item.CarName</strong>
+						</td>
+						<td class="text-right">@(item.Price.ToString("N0")) VNĐ</td>
+
+						@* Quantity *@
+						<td class="text-center">
+							<form asp-action="UpdateCart" asp-controller="Cart" method="post" class="d-inline-flex align-items-center">
+								<input type="hidden" name="carId" value="@item.CarId" />
+								<input type="hidden" name="control" value="Cart" />
+
+								@* Decrease Quantity *@
+								<button type="submit" name="quantity" value="-1"
+										class="btn btn-sm btn-outline-secondary"
+										title="Giảm số lượng">
+									-
+								</button>
+
+								@* Quantity *@
+								<input type="text" value="@item.Quantity" class="form-control text-center mx-1"
+									   style="width: 50px;" readonly />
+
+								@* Increase Quantity *@
+								<button type="submit" name="quantity" value="1"
+										class="btn btn-sm btn-outline-secondary"
+										title="Tăng số lượng">
+									+
+								</button>
+							</form>
+						</td>
+
+						<td class="text-right">@((item.Price* item.Quantity).ToString("N0")) VNĐ</td>
+						<td class="text-center">
+							@*Delete*@
+							<a asp-action="RemoveCartItem" asp-route-carId="@item.CarId" class="btn btn-sm btn-danger">
+								<i class="fas fa-trash"></i> Xóa
+							</a>
+						</td>
+					</tr>
+				}
+			</tbody>
+
+			<tfoot>
+				<tr>
+					<td colspan="3" class="text-right"><strong>Tổng cộng:</strong></td>
+					<td class="text-right"><strong>@(Model.TotalPrice.ToString("N0")) VNĐ</strong></td>
+					<td></td>
+				</tr>
+			</tfoot>
+
+		</table>
+	</div>
+
+	@* Checkout Button *@
+	<div class="d-flex justify-content-end mt-4">
+		<a asp-controller="Checkout" asp-action="Checkout" class="btn btn-success btn-lg">
+			<i class="fas fa-credit-card"></i> Tiến hành Thanh toán
+		</a>
+	</div>
+}

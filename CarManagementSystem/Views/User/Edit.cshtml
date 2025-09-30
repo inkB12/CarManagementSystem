@@ -1,0 +1,45 @@
+﻿@model CarManagementSystem.WebMVC.Models.UpdateUserViewModel
+
+@{
+    ViewData["Title"] = "Cập nhật thông tin";
+}
+
+<h2 class="mb-3">Cập nhật thông tin người dùng</h2>
+
+<form asp-action="Edit" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+
+    <div class="mb-3">
+        <label asp-for="FullName" class="form-label"></label>
+        <input asp-for="FullName" class="form-control" />
+        <span asp-validation-for="FullName" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Email" class="form-label"></label>
+        <input asp-for="Email" class="form-control bg-body-secondary text-muted border-secondary-subtle" readonly />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Phone" class="form-label"></label>
+        <input asp-for="Phone" class="form-control" />
+        <span asp-validation-for="Phone" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Password" class="form-label"></label>
+        <input asp-for="Password" class="form-control" type="password" />
+        <span asp-validation-for="Password" class="text-danger"></span>
+        <small class="text-muted text-danger">Để trống nếu không muốn đổi mật khẩu.</small>
+    </div>
+
+
+    <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+    <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Hủy</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

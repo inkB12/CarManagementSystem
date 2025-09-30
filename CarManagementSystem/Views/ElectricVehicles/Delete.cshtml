@@ -1,0 +1,25 @@
+﻿@model CarManagementSystem.WebMVC.Models.VehicleViewModel
+@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    ViewData["Title"] = "Xóa xe";
+}
+
+<h2>Xóa xe điện</h2>
+
+<div class="alert alert-danger">
+    Bạn có chắc chắn muốn xóa xe <strong>@Model.Model</strong>?
+</div>
+
+@if (!string.IsNullOrEmpty(Model.ImageUrl))
+{
+    <div class="mb-3">
+        <img src="@Model.ImageUrl" alt="Ảnh xe" style="max-width:200px;" />
+    </div>
+}
+
+<form asp-action="Delete" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Đồng ý, Xóa</button>
+    <a asp-action="Index" class="btn btn-secondary">Hủy</a>
+</form>
