@@ -17,7 +17,7 @@
 Bạn có thể sử dụng các tài khoản dưới đây để đăng nhập và kiểm tra các chức năng của hệ thống. Đây là các tài khoản đã được gán **Role** và **Policy** khác nhau trong hệ thống **ASP.NET Core Identity**.
 
 | Vai trò (Role) | Tên đăng nhập (Username) | Mật khẩu (Password) |
-| :--- | :--- | :--- | :--- |
+| :--- | :--- | :--- |
 | **Quản trị viên** | `admin@gmail.com` | `123456` |
 | **Nhân viên** | `staff@gmail.com` | `123456` |
 | **Khách hàng 1** | `nthanhn2491@gmail.com` | `123456` |
