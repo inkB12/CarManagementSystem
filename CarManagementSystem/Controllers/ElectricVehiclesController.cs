@@ -3,14 +3,8 @@ using CarManagementSystem.WebMVC.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using CarManagementSystem.BusinessObjects;
-using CarManagementSystem.Services.Interfaces;
-using CarManagementSystem.WebMVC.Models;
-using CloudinaryDotNet;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
-using CarManagementSystem.Services.Services;
 using CarManagementSystem.WebMVC.Models.Cart;
 using CarManagementSystem.WebMVC.Extensions;
 
